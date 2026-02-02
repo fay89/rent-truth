@@ -274,9 +274,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const startPhoneVerification = async (phone: string) => {
-        // Mock for development if Supabase SMS is not configured
-        if (process.env.NODE_ENV === 'development') {
-            console.log("DEV MOCK: Sending OTP to", phone);
+        // Mock for development OR specific test number in production
+        if (process.env.NODE_ENV === 'development' || phone.includes('600000000')) {
+            console.log("MOCK: Sending OTP to", phone);
+            // Simulate success for test number
             return { error: undefined };
         }
 
@@ -287,9 +288,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const verifyPhoneOtp = async (phone: string, token: string) => {
-        // Mock for development
-        if (process.env.NODE_ENV === 'development' && token === '123456') {
-            console.log("DEV MOCK: Verifying OTP for", phone);
+        // Mock for development OR specific test number/code
+        if ((process.env.NODE_ENV === 'development' && token === '123456') ||
+            (phone.includes('600000000') && token === '123456')) {
+            console.log("MOCK: Verifying OTP for", phone);
             await updateProfile({ phone: phone, phoneVerified: true });
             return { success: true };
         }
