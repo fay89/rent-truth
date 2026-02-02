@@ -51,6 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             if (error && error.code !== "PGRST116") { // PGRST116 is "Row not found"
                 console.error("Error fetching profile:", error);
+                alert(`Error obteniendo perfil: ${error.message} (${error.code})`);
                 return null;
             }
 
@@ -73,8 +74,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 // FALLBACK
                 console.warn("Profile missing. Attempting fallback creation...");
 
-                // ... (fallback logic same as before, simplified for this replacement block)
-                // Re-implementing simplified fallback for brevity in this step, assuring logic integrity
                 const { data: { session } } = await supabase.auth.getSession();
                 const metadata = session?.user?.user_metadata || {};
                 const fallbackRole = metadata.role || "TENANT";
@@ -90,6 +89,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     })
                     .select()
                     .single();
+
+                if (insertError) {
+                    console.error("Error creating profile fallback:", insertError);
+                    alert(`Error creando perfil (fallback): ${insertError.message} (${insertError.code})`);
+                    return null;
+                }
 
                 if (newProfile) {
                     const mappedUser: User = {
@@ -108,8 +113,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     return mappedUser;
                 }
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error("Unexpected parsing error or timeout in fetchProfile:", err);
+            alert(`Error inesperado login: ${err?.message || JSON.stringify(err)}`);
         }
         return null;
     };
