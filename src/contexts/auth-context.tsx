@@ -54,8 +54,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     .single();
 
                 if (error && error.code !== "PGRST116") { // PGRST116 is "Row not found"
+                    // Check if error is actually an AbortError wrapped by Supabase
+                    const isAbort = error.message?.includes('AbortError') ||
+                        error.message?.includes('aborted') ||
+                        error.code === '20'; // Sometimes code 20 is generic/abort related in some libs, but message checks are safer
+
+                    if (isAbort) {
+                        console.debug(`Attempt ${attempts} aborted (Supabase error). Navigation likely occurred.`);
+                        return null;
+                    }
+
                     console.error(`Attempt ${attempts} failed fetching profile:`, error);
                     if (attempts === maxAttempts) {
+                        // Only alert if it's NOT an abort error (which we filtered) and NOT a network fluctuation likely to pass
                         alert(`Error obteniendo perfil tras ${maxAttempts} intentos: ${error.message} (${error.code})`);
                         return null;
                     }
