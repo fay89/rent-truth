@@ -7,13 +7,14 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-white font-sans text-brand-blue">
       {/* Navbar */}
-      <header className="px-6 py-4 flex items-center justify-between border-b border-neutral-100 sticky top-0 bg-white/90 backdrop-blur-md z-50">
-        <div className="relative h-10 w-40 md:h-12 md:w-48">
+      {/* Navbar */}
+      <header className="px-6 py-4 flex items-center justify-center md:justify-between border-b border-neutral-100 sticky top-0 bg-white/90 backdrop-blur-md z-50">
+        <div className="relative h-14 w-56 md:h-12 md:w-48">
           <Image
             src="/logo-full.png"
             alt="RentTruth"
             fill
-            className="object-contain object-left"
+            className="object-contain object-center md:object-left"
             priority
           />
         </div>
@@ -24,7 +25,7 @@ export default function Home() {
           <Link href="#" className="hover:text-brand-blue">Precios</Link>
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-4">
           <Link href="/login" className="text-sm font-medium hover:text-brand-green">
             Iniciar sesión
           </Link>
