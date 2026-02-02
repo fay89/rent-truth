@@ -9,7 +9,7 @@ export default function Home() {
       {/* Navbar */}
       {/* Navbar */}
       <header className="px-6 py-4 flex items-center justify-center md:justify-between border-b border-neutral-100 sticky top-0 bg-white/90 backdrop-blur-md z-50">
-        <div className="relative h-24 w-72 md:h-12 md:w-48">
+        <div className="relative h-32 w-80 md:h-12 md:w-48">
           <Image
             src="/logo-full.png"
             alt="RentTruth"
