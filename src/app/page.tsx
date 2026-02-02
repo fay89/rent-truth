@@ -1,17 +1,21 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, User, FileText, Star, CheckCircle2 } from "lucide-react";
+import Image from "next/image";
 
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-white font-sans text-brand-blue">
       {/* Navbar */}
       <header className="px-6 py-4 flex items-center justify-between border-b border-neutral-100 sticky top-0 bg-white/90 backdrop-blur-md z-50">
-        <div className="flex items-center gap-2">
-          <ShieldCheck className="h-8 w-8 text-brand-blue" />
-          <span className="text-2xl font-bold text-brand-blue">
-            RentTruth
-          </span>
+        <div className="relative h-10 w-40 md:h-12 md:w-48">
+          <Image
+            src="/logo-full.png"
+            alt="RentTruth"
+            fill
+            className="object-contain object-left"
+            priority
+          />
         </div>
 
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-neutral-600">
@@ -44,14 +48,14 @@ export default function Home() {
               Sistema de reputación verificada para inquilinos y propietarios basado en contratos reales. Transparencia que genera confianza.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <Link href="/register">
-                <Button size="lg" className="bg-brand-green hover:bg-brand-green/90 text-white w-full sm:w-auto text-lg px-8 h-12 rounded-full font-semibold shadow-lg shadow-brand-green/20">
-                  Crear perfil
+              <Link href="/login">
+                <Button size="lg" className="bg-brand-blue hover:bg-brand-blue/90 text-white w-full sm:w-auto text-lg px-8 h-12 rounded-full font-semibold shadow-lg shadow-brand-blue/20">
+                  Iniciar sesión
                 </Button>
               </Link>
-              <Link href="#">
-                <Button variant="outline" size="lg" className="border-neutral-200 text-neutral-600 hover:bg-neutral-50 w-full sm:w-auto text-lg px-8 h-12 rounded-full">
-                  Ver perfiles
+              <Link href="/register">
+                <Button variant="outline" size="lg" className="border-brand-blue text-brand-blue hover:bg-blue-50 w-full sm:w-auto text-lg px-8 h-12 rounded-full border-2 font-semibold">
+                  Crear perfil
                 </Button>
               </Link>
             </div>

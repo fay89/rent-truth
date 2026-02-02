@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/contexts/auth-context";
 import { DataProvider } from "@/contexts/data-context";
 import { PwaReload } from "@/components/pwa-reload";
+import { SplashScreen } from "@/components/splash-screen";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,6 +42,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           <DataProvider>
+            <SplashScreen />
             {children}
             <PwaReload />
           </DataProvider>
