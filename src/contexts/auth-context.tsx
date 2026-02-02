@@ -146,34 +146,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         let mounted = true;
 
-        const initAuth = async () => {
-            // We rely primarily on onAuthStateChange, but we need to check session once to set loading
-            // if onAuthStateChange doesn't fire immediately (it usually does).
-            // However, to avoid race conditions, we can trust the listener.
+        console.log("Initializing Auth Listener...");
+        if (mounted) setIsLoading(true);
 
-            const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-                if (!mounted) return;
-                console.log("Auth State Change:", event);
+        // We use a variable to store the subscription cleanup function
+        // because onAuthStateChange is technically async in recent Supabase versions but returns a subscription immediately often?
+        // Wait, supabase.auth.onAuthStateChange returns { data: { subscription } } synchronously usually, 
+        // but let's handle the promise correctly if it is one. Used to be sync.
 
-                if (session?.user?.email) {
-                    // Only fetch if we don't have the user or it's a different user (basic check)
-                    // But easier to just fetch to be sure of latest profile data
-                    await fetchProfile(session.user.id, session.user.email);
-                } else if (event === 'SIGNED_OUT') {
-                    setUser(null);
+        // Actually, supabase.auth.onAuthStateChange IS synchronous in returning the subscription object wrapper in v2,
+        // but let's follow the safe pattern.
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (!mounted) return;
+            console.log("Auth State Change:", event);
+
+            if (session?.user?.email) {
+                await fetchProfile(session.user.id, session.user.email);
+            } else if (event === 'SIGNED_OUT') {
+                setUser(null);
+                // Safe redirect check
+                if (typeof window !== 'undefined' && window.location.pathname.startsWith('/dashboard')) {
                     router.push("/login");
                 }
+            }
 
-                if (mounted) setIsLoading(false);
-            });
+            if (mounted) setIsLoading(false);
+        });
 
-            return () => {
-                mounted = false;
-                subscription.unsubscribe();
-            };
+        // Cleanup function returned synchronously
+        return () => {
+            console.log("Cleaning up Auth Listener...");
+            mounted = false;
+            subscription.unsubscribe();
         };
-
-        initAuth();
     }, [router]);
 
     const login = async (email: string, role: UserRole, password?: string): Promise<boolean> => {
