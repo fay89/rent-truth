@@ -13,7 +13,7 @@ import {
     CheckCircle2,
     Star,
     TrendingUp,
-    Smartphone,
+
     Camera,
     ShieldCheck,
     Loader2
@@ -113,19 +113,7 @@ export default function ProfilePage() {
                                 </div>
                             </div>
 
-                            {/* Phone Section (Verification Removed) */}
-                            <div className="flex items-center gap-4 p-4 border rounded-lg bg-neutral-50/50">
-                                <div className="bg-blue-100 p-3 rounded-full">
-                                    <Smartphone className="w-6 h-6 text-brand-blue" />
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium text-neutral-500">Teléfono Móvil</p>
-                                    <div className="flex items-center gap-2">
-                                        <p className="font-semibold text-neutral-800">{user.phone || "No registrado"}</p>
-                                        {/* Optional: Add simple edit button if we want to allow saving phone without verification in future, currently just display */}
-                                    </div>
-                                </div>
-                            </div>
+
 
                         </CardContent>
                     </Card>
