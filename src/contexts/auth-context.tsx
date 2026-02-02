@@ -127,15 +127,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             } catch (err: any) {
                 // Ignore AbortError (caused by navigation/unmount)
-                if (err.name === 'AbortError' || err.message?.includes('aborted')) {
-                    console.warn(`Attempt ${attempts} aborted. Navigation likely occurred.`);
+                const isAbort = err.name === 'AbortError' ||
+                    err.message?.includes('aborted') ||
+                    String(err).includes('AbortError');
+
+                if (isAbort) {
+                    console.debug(`Attempt ${attempts} aborted. Navigation likely occurred.`);
                     return null;
                 }
 
                 console.error(`Attempt ${attempts} unexpected error:`, err);
-                if (attempts === maxAttempts) {
-                    alert(`Error inesperado login tras ${maxAttempts} intentos: ${err?.message || JSON.stringify(err)}`);
-                }
+                // Removed intrusive alert to prevent bad UX on fleeting network errors or race conditions
+                // if (attempts === maxAttempts) {
+                //    alert(...) 
+                // }
+
                 await new Promise(r => setTimeout(r, 1000 * attempts));
             }
         }
