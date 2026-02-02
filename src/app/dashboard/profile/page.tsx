@@ -31,14 +31,14 @@ export default function ProfilePage() {
     if (!user) return null;
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6 w-full max-w-full overflow-x-hidden">
             <div>
-                <h1 className="text-3xl font-bold text-brand-blue">Mi Perfil</h1>
+                <h1 className="text-2xl md:text-3xl font-bold text-brand-blue">Mi Perfil</h1>
                 <p className="text-neutral-500">Gestiona tu información personal y verificación.</p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
-                <div className="md:col-span-2 space-y-6">
+                <div className="md:col-span-2 space-y-6 min-w-0">
                     <Card className="border-none shadow-sm bg-white">
                         <CardHeader>
                             <CardTitle>Información Personal</CardTitle>
@@ -79,27 +79,27 @@ export default function ProfilePage() {
                                         }
                                     }}
                                 />
-                                <p className="text-sm font-medium text-brand-blue">{user.name}</p>
+                                <p className="text-sm font-medium text-brand-blue truncate max-w-full px-4">{user.name}</p>
                                 <p className="text-xs text-neutral-400">Toca la imagen para cambiarla</p>
                             </div>
 
-                            <div className="flex items-center gap-4 p-4 border rounded-lg bg-neutral-50/50">
-                                <div className="bg-blue-100 p-3 rounded-full">
+                            <div className="flex items-center gap-4 p-4 border rounded-lg bg-neutral-50/50 overflow-hidden">
+                                <div className="bg-blue-100 p-3 rounded-full shrink-0">
                                     <User className="w-6 h-6 text-brand-blue" />
                                 </div>
-                                <div>
+                                <div className="min-w-0">
                                     <p className="text-sm font-medium text-neutral-500">Nombre completo</p>
-                                    <p className="font-semibold text-neutral-800">{user.name}</p>
+                                    <p className="font-semibold text-neutral-800 truncate">{user.name}</p>
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-4 p-4 border rounded-lg bg-neutral-50/50">
-                                <div className="bg-blue-100 p-3 rounded-full">
+                            <div className="flex items-center gap-4 p-4 border rounded-lg bg-neutral-50/50 overflow-hidden">
+                                <div className="bg-blue-100 p-3 rounded-full shrink-0">
                                     <Mail className="w-6 h-6 text-brand-blue" />
                                 </div>
-                                <div>
+                                <div className="min-w-0">
                                     <p className="text-sm font-medium text-neutral-500">Email</p>
-                                    <p className="font-semibold text-neutral-800">{user.email}</p>
+                                    <p className="font-semibold text-neutral-800 truncate">{user.email}</p>
                                 </div>
                             </div>
 

@@ -58,7 +58,7 @@ export default function Home() {
           </div>
           <div className="flex-1 relative justify-center flex">
             {/* Placeholder for Phone Mockup */}
-            <div className="relative w-[300px] h-[600px] bg-neutral-100 rounded-[3rem] border-8 border-neutral-900 shadow-2xl overflow-hidden flex flex-col">
+            <div className="relative w-full max-w-[300px] h-[600px] bg-neutral-100 rounded-[3rem] border-8 border-neutral-900 shadow-2xl overflow-hidden flex flex-col">
               <div className="bg-white h-full w-full p-4 overflow-hidden pt-12 flex flex-col">
                 <div className="flex items-center gap-2 mb-6 justify-center">
                   <ShieldCheck className="h-6 w-6 text-brand-blue" />

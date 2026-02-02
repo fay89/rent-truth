@@ -41,10 +41,10 @@ export default function ContractsPage() {
     });
 
     return (
-        <div className="space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-4 md:space-y-6 w-full max-w-full overflow-x-hidden">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-brand-blue">Contratos</h1>
+                    <h1 className="text-2xl md:text-3xl font-bold text-brand-blue">Contratos</h1>
                     <p className="text-neutral-500">Historial completo de tus alquileres.</p>
                 </div>
                 {user.role === "LANDLORD" && (
@@ -75,7 +75,7 @@ export default function ContractsPage() {
                                         <div className="h-12 w-12 rounded-xl bg-blue-50 flex items-center justify-center text-brand-blue shrink-0">
                                             <FileText className="w-6 h-6" />
                                         </div>
-                                        <div>
+                                        <div className="min-w-0 flex-1">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <Badge variant="outline" className={
                                                     contract.status === "VERIFIED" || contract.status === "ACTIVE" ? "bg-blue-50 text-brand-blue border-blue-200" :
@@ -87,9 +87,9 @@ export default function ContractsPage() {
                                                         contract.status === "ENDED" ? "Finalizado" :
                                                             contract.status === "PENDING" ? "Pendiente" : contract.status}
                                                 </Badge>
-                                                <span className="text-xs text-neutral-400">ID: {contract.id.slice(0, 8)}</span>
+                                                <span className="text-xs text-neutral-400 shrink-0">ID: {contract.id.slice(0, 8)}</span>
                                             </div>
-                                            <h3 className="font-semibold text-lg text-brand-blue group-hover:text-brand-green transition-colors">{contract.propertyAddress}</h3>
+                                            <h3 className="font-semibold text-lg text-brand-blue group-hover:text-brand-green transition-colors truncate">{contract.propertyAddress}</h3>
 
                                             <div className="flex flex-wrap gap-4 mt-2 text-sm text-neutral-500">
                                                 <div className="flex items-center gap-1">

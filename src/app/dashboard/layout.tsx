@@ -27,13 +27,13 @@ export default function DashboardLayout({
     }
 
     return (
-        <div className="flex min-h-screen bg-neutral-50 dark:bg-neutral-900">
+        <div className="flex h-screen bg-neutral-50 overflow-x-hidden w-full max-w-full dark:bg-neutral-900">
             {/* Desktop Sidebar */}
             <DashboardSidebar className="hidden md:flex" />
 
-            <div className="flex-1 flex flex-col min-h-screen transition-all duration-300 ease-in-out">
+            <div className="flex-1 flex flex-col min-h-screen transition-all duration-300 ease-in-out w-full max-w-full overflow-hidden">
                 {/* Mobile Header */}
-                <header className="md:hidden flex items-center justify-between p-4 bg-white dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700 sticky top-0 z-20">
+                <header className="md:hidden flex items-center justify-between p-4 bg-white dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700 sticky top-0 z-20 w-full">
                     <div className="flex items-center gap-2">
                         <span className="text-lg font-bold text-brand-blue dark:text-white">RentTruth</span>
                     </div>
@@ -51,7 +51,7 @@ export default function DashboardLayout({
                 </header>
 
                 {/* Top Bar (Desktop) - Optional, can be part of page or a shared top bar */}
-                <header className="hidden md:flex items-center justify-between px-6 py-4 bg-white dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700 sticky top-0 z-10 text-brand-blue">
+                <header className="hidden md:flex items-center justify-between px-6 py-4 bg-white dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700 sticky top-0 z-10 text-brand-blue w-full">
                     <h1 className="text-xl font-semibold">
                         Bienvenido, {user.name}
                     </h1>
@@ -69,7 +69,7 @@ export default function DashboardLayout({
                     </div>
                 </header>
 
-                <main className="flex-1 p-6 overflow-auto bg-brand-light-gray dark:bg-neutral-900">
+                <main className="flex-1 p-3 md:p-6 overflow-auto bg-brand-light-gray dark:bg-neutral-900 w-full max-w-full overflow-x-hidden">
                     {children}
                 </main>
             </div>

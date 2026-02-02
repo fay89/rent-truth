@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import Image from "next/image";
+import { APP_VERSION } from "@/lib/version";
 
 export function DashboardSidebar({ className }: { className?: string }) {
     const pathname = usePathname();
@@ -96,6 +97,9 @@ export function DashboardSidebar({ className }: { className?: string }) {
                     <LogOut className="w-5 h-5" />
                     Cerrar Sesión
                 </button>
+                <div className="mt-4 px-3 text-xs text-neutral-500 font-mono">
+                    {APP_VERSION}
+                </div>
             </div>
         </aside>
     );

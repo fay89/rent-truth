@@ -25,23 +25,23 @@ export default function LandlordDashboard() {
     const hasReview = reviews.some(r => r.targetId === user.email);
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
+        <div className="space-y-5 md:space-y-8 animate-in fade-in duration-500 w-full max-w-full overflow-x-hidden">
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div>
-                    <h1 className="text-3xl font-bold text-brand-blue flex items-center gap-2">
-                        Hola, {user.name} <span className="text-2xl">👋</span>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 w-full max-w-full">
+                <div className="min-w-0">
+                    <h1 className="text-2xl md:text-3xl font-bold text-brand-blue flex items-center gap-2 truncate">
+                        Hola, {user.name} <span className="text-xl md:text-2xl">👋</span>
                     </h1>
-                    <p className="text-neutral-500">Gestiona tus propiedades y contratos.</p>
+                    <p className="text-sm md:text-base text-neutral-500 truncate">Gestiona tus propiedades y contratos.</p>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center gap-4 w-full md:w-auto">
                     {/* Visual Rating Badge */}
-                    <div className="flex items-center gap-3 bg-white p-2 pr-5 rounded-2xl border border-yellow-100 shadow-sm">
-                        <div className="bg-yellow-50 p-2.5 rounded-xl">
+                    <div className="flex items-center gap-3 bg-white p-2 pr-5 rounded-2xl border border-yellow-100 shadow-sm max-w-full overflow-hidden shrink-0">
+                        <div className="bg-yellow-50 p-2.5 rounded-xl shrink-0">
                             <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
                         </div>
-                        <div className="flex flex-col">
+                        <div className="flex flex-col min-w-0">
                             <div className="flex items-baseline gap-1">
                                 <span className="text-2xl font-black text-brand-blue leading-none">
                                     {reviews.filter(r => r.targetId === user.email).length > 0
@@ -50,14 +50,14 @@ export default function LandlordDashboard() {
                                 </span>
                                 <span className="text-xs text-neutral-400 font-medium">/ 5.0</span>
                             </div>
-                            <span className="text-[10px] text-neutral-400 font-semibold uppercase tracking-wider">
+                            <span className="text-[10px] text-neutral-400 font-semibold uppercase tracking-wider truncate">
                                 {reviews.filter(r => r.targetId === user.email).length} Reseñas
                             </span>
                         </div>
                     </div>
 
                     {/* Primary CTA */}
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 shrink-0">
                         <ShareReputationDialog />
                         <Link href="/dashboard/contracts/new">
                             <Button className="h-14 px-6 bg-brand-green hover:bg-brand-green/90 text-white shadow-lg shadow-brand-green/20 rounded-xl text-base font-semibold">
@@ -68,12 +68,12 @@ export default function LandlordDashboard() {
                 </div>
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-8">
+            <div className="grid lg:grid-cols-3 gap-8 w-full max-w-full">
                 {/* Main Column */}
-                <div className="lg:col-span-2 space-y-8">
+                <div className="lg:col-span-2 space-y-8 min-w-0 w-full">
 
                     {/* Onboarding Checklist */}
-                    <Card className="border-none shadow-sm bg-white">
+                    <Card className="border-none shadow-sm bg-white w-full max-w-full overflow-hidden">
                         <CardHeader>
                             <CardTitle className="text-xl">Tu checklist de propietario</CardTitle>
                             <CardDescription>Pasos para blindar tus alquileres.</CardDescription>
@@ -98,13 +98,13 @@ export default function LandlordDashboard() {
                     </Card>
 
                     {/* Active Contracts Summary */}
-                    <Card className="border-none shadow-sm">
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <div>
-                                <CardTitle>Mis Propiedades/Contratos</CardTitle>
-                                <CardDescription>Resumen de tus alquileres actuales.</CardDescription>
+                    <Card className="border-none shadow-sm w-full max-w-full overflow-hidden">
+                        <CardHeader className="flex flex-row items-center justify-between gap-4">
+                            <div className="min-w-0">
+                                <CardTitle className="truncate">Mis Propiedades/Contratos</CardTitle>
+                                <CardDescription className="truncate">Resumen de tus alquileres actuales.</CardDescription>
                             </div>
-                            <Button variant="outline" size="sm" asChild>
+                            <Button variant="outline" size="sm" asChild className="shrink-0">
                                 <Link href="/dashboard/contracts">Ver todos</Link>
                             </Button>
                         </CardHeader>
@@ -123,20 +123,20 @@ export default function LandlordDashboard() {
                                     </Link>
                                 </div>
                             ) : (
-                                <div className="space-y-4">
+                                <div className="space-y-4 w-full">
                                     {contracts.slice(0, 3).map((contract) => (
-                                        <Link href={`/dashboard/contracts/${contract.id}`} key={contract.id} className="block group">
-                                            <div className="flex items-center justify-between p-4 rounded-lg border border-neutral-100 bg-white hover:border-brand-blue/30 hover:shadow-sm transition-all cursor-pointer">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-colors">
+                                        <Link href={`/dashboard/contracts/${contract.id}`} key={contract.id} className="block group w-full">
+                                            <div className="flex items-center justify-between p-4 rounded-lg border border-neutral-100 bg-white hover:border-brand-blue/30 hover:shadow-sm transition-all cursor-pointer w-full gap-4">
+                                                <div className="flex items-center gap-4 min-w-0 flex-1">
+                                                    <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-colors shrink-0">
                                                         <FileText className="w-5 h-5" />
                                                     </div>
-                                                    <div>
-                                                        <p className="font-medium text-brand-blue">{contract.propertyAddress}</p>
-                                                        <p className="text-xs text-neutral-500">Inquilino: {contract.tenantEmail}</p>
+                                                    <div className="min-w-0 flex-1">
+                                                        <p className="font-medium text-brand-blue truncate">{contract.propertyAddress}</p>
+                                                        <p className="text-xs text-neutral-500 truncate">Inquilino: {contract.tenantEmail}</p>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center gap-2 shrink-0">
                                                     <Badge variant="outline" className={
                                                         contract.status === "VERIFIED" ? "bg-green-50 text-green-700 border-green-200" :
                                                             contract.status === "PENDING" ? "bg-yellow-50 text-yellow-700 border-yellow-200" : ""
@@ -155,15 +155,15 @@ export default function LandlordDashboard() {
                 </div>
 
                 {/* Sidebar Column */}
-                <div className="space-y-8">
-                    <Card className="border-none shadow-sm bg-brand-blue text-white">
+                <div className="space-y-8 min-w-0 w-full">
+                    <Card className="border-none shadow-sm bg-brand-blue text-white w-full max-w-full overflow-hidden">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <Shield className="w-5 h-5" /> Protección RentTruth
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <p className="text-sm text-blue-100">
+                            <p className="text-sm text-blue-100 break-words">
                                 Tus contratos están protegidos y verificados. Solo los inquilinos con contrato real pueden dejarte reseñas.
                             </p>
                             <div className="text-xs bg-white/10 p-3 rounded text-blue-50">
@@ -172,14 +172,14 @@ export default function LandlordDashboard() {
                         </CardContent>
                     </Card>
 
-                    <Card className="border-none shadow-sm">
+                    <Card className="border-none shadow-sm w-full max-w-full overflow-hidden">
                         <CardHeader>
                             <CardTitle className="text-lg">Consejos para propietarios</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-3">
                             <div className="bg-white p-3 rounded-md border border-neutral-100">
                                 <p className="text-sm text-brand-blue font-medium mb-1">Fotos verificadas</p>
-                                <p className="text-xs text-neutral-500">Sube fotos del estado inicial del piso para evitar disputas.</p>
+                                <p className="text-xs text-neutral-500 break-words">Sube fotos del estado inicial del piso para evitar disputas.</p>
                             </div>
                         </CardContent>
                     </Card>
