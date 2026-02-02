@@ -42,80 +42,97 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Fetch user profile from 'profiles' table
     const fetchProfile = async (userId: string, email: string): Promise<User | null> => {
-        try {
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', userId)
-                .single();
+        let attempts = 0;
+        const maxAttempts = 3;
 
-            if (error && error.code !== "PGRST116") { // PGRST116 is "Row not found"
-                console.error("Error fetching profile:", error);
-                alert(`Error obteniendo perfil: ${error.message} (${error.code})`);
-                return null;
-            }
-
-            if (data) {
-                const mappedUser: User = {
-                    id: data.id,
-                    name: data.name || email.split('@')[0],
-                    email: data.email || email,
-                    role: data.role as UserRole,
-                    emailVerified: data.email_verified || false,
-                    photoUrl: data.photo_url,
-                    phone: data.phone,
-                    phoneVerified: data.phone_verified || false,
-                    identityVerified: data.identity_verified || false,
-                    identityStatus: data.identity_status || 'PENDING'
-                };
-                setUser(mappedUser);
-                return mappedUser;
-            } else {
-                // FALLBACK
-                console.warn("Profile missing. Attempting fallback creation...");
-
-                const { data: { session } } = await supabase.auth.getSession();
-                const metadata = session?.user?.user_metadata || {};
-                const fallbackRole = metadata.role || "TENANT";
-                const fallbackName = metadata.name || email.split('@')[0];
-
-                const { data: newProfile, error: insertError } = await supabase
+        while (attempts < maxAttempts) {
+            try {
+                attempts++;
+                const { data, error } = await supabase
                     .from('profiles')
-                    .insert({
-                        id: userId,
-                        email: email,
-                        name: fallbackName,
-                        role: fallbackRole
-                    })
-                    .select()
+                    .select('*')
+                    .eq('id', userId)
                     .single();
 
-                if (insertError) {
-                    console.error("Error creating profile fallback:", insertError);
-                    alert(`Error creando perfil (fallback): ${insertError.message} (${insertError.code})`);
-                    return null;
+                if (error && error.code !== "PGRST116") { // PGRST116 is "Row not found"
+                    console.error(`Attempt ${attempts} failed fetching profile:`, error);
+                    if (attempts === maxAttempts) {
+                        alert(`Error obteniendo perfil tras ${maxAttempts} intentos: ${error.message} (${error.code})`);
+                        return null;
+                    }
+                    // Wait before retry
+                    await new Promise(r => setTimeout(r, 1000 * attempts));
+                    continue;
                 }
 
-                if (newProfile) {
+                if (data) {
                     const mappedUser: User = {
-                        id: newProfile.id,
-                        name: newProfile.name,
-                        email: newProfile.email,
-                        role: newProfile.role as UserRole,
-                        emailVerified: newProfile.email_verified || false,
-                        photoUrl: newProfile.photo_url,
-                        phone: newProfile.phone,
-                        phoneVerified: newProfile.phone_verified || false,
-                        identityVerified: newProfile.identity_verified || false,
-                        identityStatus: newProfile.identity_status || 'PENDING'
+                        id: data.id,
+                        name: data.name || email.split('@')[0],
+                        email: data.email || email,
+                        role: data.role as UserRole,
+                        emailVerified: data.email_verified || false,
+                        photoUrl: data.photo_url,
+                        phone: data.phone,
+                        phoneVerified: data.phone_verified || false,
+                        identityVerified: data.identity_verified || false,
+                        identityStatus: data.identity_status || 'PENDING'
                     };
                     setUser(mappedUser);
                     return mappedUser;
+                } else {
+                    // FALLBACK
+                    console.warn("Profile missing. Attempting fallback creation...");
+
+                    const { data: { session } } = await supabase.auth.getSession();
+                    const metadata = session?.user?.user_metadata || {};
+                    const fallbackRole = metadata.role || "TENANT";
+                    const fallbackName = metadata.name || email.split('@')[0];
+
+                    const { data: newProfile, error: insertError } = await supabase
+                        .from('profiles')
+                        .insert({
+                            id: userId,
+                            email: email,
+                            name: fallbackName,
+                            role: fallbackRole
+                        })
+                        .select()
+                        .single();
+
+                    if (insertError) {
+                        console.error("Error creating profile fallback:", insertError);
+                        alert(`Error creando perfil (fallback): ${insertError.message} (${insertError.code})`);
+                        return null;
+                    }
+
+                    if (newProfile) {
+                        const mappedUser: User = {
+                            id: newProfile.id,
+                            name: newProfile.name,
+                            email: newProfile.email,
+                            role: newProfile.role as UserRole,
+                            emailVerified: newProfile.email_verified || false,
+                            photoUrl: newProfile.photo_url,
+                            phone: newProfile.phone,
+                            phoneVerified: newProfile.phone_verified || false,
+                            identityVerified: newProfile.identity_verified || false,
+                            identityStatus: newProfile.identity_status || 'PENDING'
+                        };
+                        setUser(mappedUser);
+                        return mappedUser;
+                    }
                 }
+                // Valid exit
+                break;
+
+            } catch (err: any) {
+                console.error(`Attempt ${attempts} unexpected error:`, err);
+                if (attempts === maxAttempts) {
+                    alert(`Error inesperado login tras ${maxAttempts} intentos: ${err?.message || JSON.stringify(err)}`);
+                }
+                await new Promise(r => setTimeout(r, 1000 * attempts));
             }
-        } catch (err: any) {
-            console.error("Unexpected parsing error or timeout in fetchProfile:", err);
-            alert(`Error inesperado login: ${err?.message || JSON.stringify(err)}`);
         }
         return null;
     };
