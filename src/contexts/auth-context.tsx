@@ -274,23 +274,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const startPhoneVerification = async (phone: string) => {
+        // Sanitize phone (remove spaces, dashes, etc.)
+        const cleanPhone = phone.replace(/\D/g, '');
+
         // Mock for development OR specific test number in production
-        if (process.env.NODE_ENV === 'development' || phone.includes('600000000')) {
+        // Check contains 600000000 even if there are prefixes like 34
+        if (process.env.NODE_ENV === 'development' || cleanPhone.includes('600000000')) {
             console.log("MOCK: Sending OTP to", phone);
             // Simulate success for test number
             return { error: undefined };
         }
 
         const { error } = await supabase.auth.signInWithOtp({
-            phone: phone,
+            phone: phone, // Supabase usually handles formatting, but better to send clean or raw
         });
         return { error: error?.message };
     };
 
     const verifyPhoneOtp = async (phone: string, token: string) => {
+        const cleanPhone = phone.replace(/\D/g, '');
+
         // Mock for development OR specific test number/code
         if ((process.env.NODE_ENV === 'development' && token === '123456') ||
-            (phone.includes('600000000') && token === '123456')) {
+            (cleanPhone.includes('600000000') && token === '123456')) {
             console.log("MOCK: Verifying OTP for", phone);
             await updateProfile({ phone: phone, phoneVerified: true });
             return { success: true };
