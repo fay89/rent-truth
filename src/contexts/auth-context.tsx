@@ -26,8 +26,7 @@ interface AuthContextType {
     updateProfile: (data: Partial<User>) => Promise<void>;
     getPublicUser: (email: string) => Promise<User | null>;
     verifyEmail: () => void;
-    startPhoneVerification: (phone: string) => Promise<{ error?: string }>;
-    verifyPhoneOtp: (phone: string, token: string) => Promise<{ success: boolean; error?: string }>;
+
     logout: () => void;
     isAuthenticated: boolean;
     isLoading: boolean;
@@ -273,52 +272,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const startPhoneVerification = async (phone: string) => {
-        // Sanitize phone (remove spaces, dashes, etc.)
-        const cleanPhone = phone.replace(/\D/g, '');
-
-        // Mock for development OR specific test number in production
-        // Check contains 600000000 even if there are prefixes like 34
-        if (process.env.NODE_ENV === 'development' || cleanPhone.includes('600000000')) {
-            console.log("MOCK: Sending OTP to", phone);
-            // Simulate success for test number
-            return { error: undefined };
-        }
-
-        const { error } = await supabase.auth.signInWithOtp({
-            phone: phone, // Supabase usually handles formatting, but better to send clean or raw
-        });
-        return { error: error?.message };
-    };
-
-    const verifyPhoneOtp = async (phone: string, token: string) => {
-        const cleanPhone = phone.replace(/\D/g, '');
-
-        // Mock for development OR specific test number/code
-        if ((process.env.NODE_ENV === 'development' && token === '123456') ||
-            (cleanPhone.includes('600000000') && token === '123456')) {
-            console.log("MOCK: Verifying OTP for", phone);
-            await updateProfile({ phone: phone, phoneVerified: true });
-            return { success: true };
-        }
-
-        const { data, error } = await supabase.auth.verifyOtp({
-            phone,
-            token,
-            type: 'sms',
-        });
-
-        if (error) return { success: false, error: error.message };
-
-        if (data.session && user) {
-            // Update profile phone verified status
-            await updateProfile({ phone: phone, phoneVerified: true });
-            return { success: true };
-        }
-
-        return { success: false, error: "Verificación fallida" };
-    };
-
     const logout = async () => {
         await supabase.auth.signOut();
         // Listener handles redirect
@@ -350,8 +303,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return (
         <AuthContext.Provider value={{
-            user, login, register, updateProfile, verifyEmail, logout, isAuthenticated: !!user, isLoading, getPublicUser,
-            startPhoneVerification, verifyPhoneOtp
+            user, login, register, updateProfile, verifyEmail, logout, isAuthenticated: !!user, isLoading, getPublicUser
         }}>
             {children}
         </AuthContext.Provider>

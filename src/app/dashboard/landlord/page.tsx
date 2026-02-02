@@ -20,7 +20,7 @@ export default function LandlordDashboard() {
     const activeContractsData = contracts.filter(c => c.status === "ACTIVE" || c.status === "ENDED");
 
     // Logic for checklist (Landlord)
-    const hasProfile = user.identityVerified && user.phoneVerified;
+    const hasProfile = user.identityVerified;
     const hasCreatedContract = contracts.length > 0;
     const hasReview = reviews.some(r => r.targetId === user.email);
 

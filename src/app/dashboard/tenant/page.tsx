@@ -26,7 +26,7 @@ export default function TenantDashboard() {
     const pendingContracts = contracts.filter(c => c.status === "PENDING");
 
     // Logic for checklist
-    const hasProfile = user.phoneVerified && user.identityVerified;
+    const hasProfile = user.identityVerified;
     const hasContract = contracts.length > 0;
     const hasReview = reviews.some(r => r.targetId === user.email);
 

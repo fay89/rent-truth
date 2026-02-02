@@ -22,41 +22,11 @@ import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 
 export default function ProfilePage() {
-    const { user, updateProfile, startPhoneVerification, verifyPhoneOtp } = useAuth();
+    const { user, updateProfile } = useAuth();
     const { reviews } = useData();
 
     // Phone Verification State
-    const [phoneInput, setPhoneInput] = useState("");
-    const [otpInput, setOtpInput] = useState("");
-    const [showOtpInput, setShowOtpInput] = useState(false);
-    const [phoneLoading, setPhoneLoading] = useState(false);
 
-    const handleSendOtp = async () => {
-        if (!phoneInput) return;
-        setPhoneLoading(true);
-        const { error } = await startPhoneVerification(phoneInput);
-        setPhoneLoading(false);
-        if (error) {
-            alert("Error al enviar SMS: " + error);
-        } else {
-            setShowOtpInput(true);
-            alert("Código enviado. Revisa tus SMS.");
-        }
-    };
-
-    const handleVerifyOtp = async () => {
-        if (!otpInput) return;
-        setPhoneLoading(true);
-        const { success, error } = await verifyPhoneOtp(phoneInput, otpInput);
-        setPhoneLoading(false);
-        if (success) {
-            alert("¡Teléfono verificado con éxito!");
-            setShowOtpInput(false);
-            setOtpInput("");
-        } else {
-            alert("Error: " + error);
-        }
-    };
 
     if (!user) return null;
 
@@ -143,51 +113,17 @@ export default function ProfilePage() {
                                 </div>
                             </div>
 
-                            {/* Phone Verification Section */}
-                            <div className="flex items-start gap-4 p-4 border rounded-lg bg-neutral-50/50">
+                            {/* Phone Section (Verification Removed) */}
+                            <div className="flex items-center gap-4 p-4 border rounded-lg bg-neutral-50/50">
                                 <div className="bg-blue-100 p-3 rounded-full">
                                     <Smartphone className="w-6 h-6 text-brand-blue" />
                                 </div>
-                                <div className="flex-1">
-                                    <p className="text-sm font-medium text-neutral-500 mb-1">Teléfono Móvil</p>
-                                    {user.phoneVerified ? (
-                                        <div className="flex items-center gap-2">
-                                            <p className="font-semibold text-neutral-800">{user.phone}</p>
-                                            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 gap-1 pl-2 pr-2.5 py-0.5">
-                                                <CheckCircle2 className="w-3 h-3" /> Verificado
-                                            </Badge>
-                                        </div>
-                                    ) : (
-                                        <div className="space-y-3">
-                                            {!showOtpInput ? (
-                                                <div className="flex gap-2">
-                                                    <Input
-                                                        placeholder="+34 600 000 000"
-                                                        value={phoneInput}
-                                                        onChange={(e) => setPhoneInput(e.target.value)}
-                                                        className="max-w-[200px]"
-                                                    />
-                                                    <Button onClick={handleSendOtp} disabled={phoneLoading} size="sm">
-                                                        {phoneLoading ? "Enviando..." : "Verificar"}
-                                                    </Button>
-                                                </div>
-                                            ) : (
-                                                <div className="flex gap-2 items-center animate-in fade-in slide-in-from-top-2">
-                                                    <Input
-                                                        placeholder="Código (6 dígitos)"
-                                                        value={otpInput}
-                                                        onChange={(e) => setOtpInput(e.target.value)}
-                                                        className="max-w-[150px]"
-                                                    />
-                                                    <Button onClick={handleVerifyOtp} disabled={phoneLoading} size="sm">
-                                                        {phoneLoading ? "Verificando..." : "Confirmar"}
-                                                    </Button>
-                                                    <Button variant="ghost" size="sm" onClick={() => setShowOtpInput(false)}>Cancelar</Button>
-                                                </div>
-                                            )}
-                                            <p className="text-xs text-neutral-400">Te enviaremos un SMS de confirmación.</p>
-                                        </div>
-                                    )}
+                                <div>
+                                    <p className="text-sm font-medium text-neutral-500">Teléfono Móvil</p>
+                                    <div className="flex items-center gap-2">
+                                        <p className="font-semibold text-neutral-800">{user.phone || "No registrado"}</p>
+                                        {/* Optional: Add simple edit button if we want to allow saving phone without verification in future, currently just display */}
+                                    </div>
                                 </div>
                             </div>
 
