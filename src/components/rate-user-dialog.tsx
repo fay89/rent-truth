@@ -38,7 +38,9 @@ export function RateUserDialog({ contractId, targetId, targetName, onRate }: Rat
                 contractId,
                 reviewerId: user.email,
                 targetId,
-                rating,
+                // rating, // Removed as addReview calculates it
+                categories: { "General": rating },
+                period: "6_MONTHS", // Default for manual/generic reviews
                 comment,
             });
             setOpen(false);
