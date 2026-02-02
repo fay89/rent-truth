@@ -126,6 +126,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 break;
 
             } catch (err: any) {
+                // Ignore AbortError (caused by navigation/unmount)
+                if (err.name === 'AbortError' || err.message?.includes('aborted')) {
+                    console.warn(`Attempt ${attempts} aborted. Navigation likely occurred.`);
+                    return null;
+                }
+
                 console.error(`Attempt ${attempts} unexpected error:`, err);
                 if (attempts === maxAttempts) {
                     alert(`Error inesperado login tras ${maxAttempts} intentos: ${err?.message || JSON.stringify(err)}`);
@@ -138,26 +144,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Initialize Auth Listener
     useEffect(() => {
+        let mounted = true;
+
         const initAuth = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session?.user?.email) {
-                console.log("Session found on mount:", session.user.email);
-                await fetchProfile(session.user.id, session.user.email);
-            }
-            setIsLoading(false);
+            // We rely primarily on onAuthStateChange, but we need to check session once to set loading
+            // if onAuthStateChange doesn't fire immediately (it usually does).
+            // However, to avoid race conditions, we can trust the listener.
 
             const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+                if (!mounted) return;
                 console.log("Auth State Change:", event);
-                if (event === 'SIGNED_IN' && session?.user.email) {
+
+                if (session?.user?.email) {
+                    // Only fetch if we don't have the user or it's a different user (basic check)
+                    // But easier to just fetch to be sure of latest profile data
                     await fetchProfile(session.user.id, session.user.email);
-                    // router.refresh(); // Conflict with login router.push
                 } else if (event === 'SIGNED_OUT') {
                     setUser(null);
-                    router.push("/login"); // Force redirect on logout
+                    router.push("/login");
                 }
+
+                if (mounted) setIsLoading(false);
             });
 
             return () => {
+                mounted = false;
                 subscription.unsubscribe();
             };
         };
