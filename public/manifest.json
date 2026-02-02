@@ -1,0 +1,21 @@
+{
+    "name": "RentTruth",
+    "short_name": "RentTruth",
+    "description": "Plataforma de reputación para inquilinos y propietarios",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#2563EB",
+    "icons": [
+        {
+            "src": "/icons/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
