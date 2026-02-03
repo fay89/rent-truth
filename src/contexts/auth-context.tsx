@@ -192,6 +192,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     // Redirigimos basándonos en el rol solicitado como fallback optimista.
                     console.warn("No se pudo cargar el perfil inmediatamente. Usando rol solicitado como fallback.");
 
+                    setIsLoading(false); // Liberar UI
                     if (role === "LANDLORD") {
                         router.push("/dashboard/landlord");
                     } else if (role === "ADMIN") {
@@ -204,12 +205,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 }
 
                 // Perfil cargado correctamente
+                setIsLoading(false); // Liberar UI
                 if (userProfile.role === 'ADMIN') {
                     router.push("/dashboard/admin");
                     return true;
                 }
 
                 if (userProfile.role !== role) {
+                    setIsLoading(false); // Liberar UI
                     if (userProfile.role === "LANDLORD") {
                         router.push("/dashboard/landlord");
                     } else {
