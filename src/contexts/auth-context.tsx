@@ -168,10 +168,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setIsLoading(true);
         try {
             console.log("Iniciando login para:", email);
-            const { data, error } = await supabase.auth.signInWithPassword({
+
+            // Race condition para el Auth de Supabase (por si la red va mal)
+            const authPromise = supabase.auth.signInWithPassword({
                 email,
                 password
             });
+            const authTimeout = new Promise<{ data: any; error: any }>((_, reject) =>
+                setTimeout(() => reject(new Error("Timeout conectando con servidor")), 6000)
+            );
+
+            const { data, error } = await Promise.race([authPromise, authTimeout])
+                .catch(err => ({ data: { user: null, session: null }, error: { message: "Error de conexión (Timeout): " + err.message } }));
 
             if (error) {
                 console.warn("Login error:", error.message);
