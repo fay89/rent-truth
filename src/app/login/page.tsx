@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { ShieldCheck, CheckCircle2 } from "lucide-react";
 
+import { APP_VERSION } from "@/lib/version";
+
 export default function LoginPage() {
     const { login } = useAuth();
     const [email, setEmail] = useState("");
@@ -21,17 +23,26 @@ export default function LoginPage() {
         e.preventDefault();
         if (email && password) {
             setIsLoading(true);
-            console.log("Attempting login...");
+
+            // UI Safety Net: Force unlock after 8 seconds if context hangs
+            const safetyTimeout = setTimeout(() => {
+                if (isLoading) { // Check if still loading
+                    console.warn("UI Safety Timeout triggered");
+                    setIsLoading(false);
+                    alert("El inicio de sesión está tardando demasiado. \n\nPor favor:\n1. Comprueba tu conexión.\n2. Si persiste, recarga la página (tira hacia abajo) para actualizar la App.");
+                }
+            }, 8000);
+
             try {
                 const success = await login(email, role, password);
+                clearTimeout(safetyTimeout); // Clear timer on response
+
                 if (!success) {
                     // Alert is already shown by AuthContext for specific errors
-                    // alert("Credenciales incorrectas (o cuenta no registrada aún)");
-                } else {
-                    console.log("Login successful, redirecting...");
                 }
             } catch (err) {
                 console.error("Login trigger error:", err);
+                clearTimeout(safetyTimeout);
             } finally {
                 setIsLoading(false);
             }
@@ -98,6 +109,10 @@ export default function LoginPage() {
                         >
                             Soy Propietario
                         </button>
+                    </div>
+
+                    <div className="absolute top-4 right-4 text-xs text-neutral-300 pointer-events-none opacity-50">
+                        {APP_VERSION}
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-5">
