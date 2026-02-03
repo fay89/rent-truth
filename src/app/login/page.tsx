@@ -172,20 +172,37 @@ export default function LoginPage() {
                     </div>
                 </div>
             </div>
-            {/* Dev Helper: Reset Data */}
-            <div className="fixed bottom-4 right-4 animate-in fade-in duration-1000">
+            {/* Dev Helper: Reset Data & Net Check */}
+            <div className="fixed bottom-4 right-4 animate-in fade-in duration-1000 flex flex-col items-end gap-2">
+                <div className="text-[10px] text-neutral-300 font-mono">
+                    Env: {process.env.NEXT_PUBLIC_SUPABASE_URL ? "OK" : "MISSING"}
+                </div>
                 <Button
                     variant="ghost"
                     size="sm"
                     className="text-xs text-neutral-300 hover:text-red-500 hover:bg-red-50"
-                    onClick={() => {
-                        if (confirm("¿Borrar todos los datos y usuarios?")) {
+                    onClick={async () => {
+                        if (confirm("¿Borrar datos y probar red?")) {
                             localStorage.clear();
+
+                            // Simple ping check
+                            try {
+                                const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+                                if (!url) alert("Error: URL de Supabase no configurada");
+                                else {
+                                    const start = Date.now();
+                                    await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+                                    alert(`Red OK: Ping ${Date.now() - start}ms`);
+                                }
+                            } catch (e: any) {
+                                alert("Error de Red: " + e.message);
+                            }
+
                             window.location.reload();
                         }
                     }}
                 >
-                    Reiniciar Sistema (Debug)
+                    Diagnóstico Red
                 </Button>
             </div>
         </div>
