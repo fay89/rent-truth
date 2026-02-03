@@ -26,6 +26,12 @@ export default function DashboardLayout({
         return null;
     }
 
+    // Si es ADMIN, delegamos el layout al layout específico de admin (src/app/dashboard/admin/layout.tsx)
+    // para evitar doble sidebar header o menús incorrectos en móvil.
+    if (user.role === 'ADMIN') {
+        return <>{children}</>;
+    }
+
     return (
         <div className="flex h-screen bg-neutral-50 overflow-x-hidden w-full max-w-full dark:bg-neutral-900">
             {/* Desktop Sidebar */}
