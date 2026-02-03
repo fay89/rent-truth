@@ -4,35 +4,58 @@ import { useEffect } from "react";
 
 export function PwaReload() {
     useEffect(() => {
-        // Limpieza agresiva en desarrollo
+        // 1. Limpieza en desarrollo
         if (process.env.NODE_ENV === 'development' && 'serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(registrations => {
                 for (let registration of registrations) {
                     registration.unregister();
-                    console.log('[Dev] Service Worker unregistered');
                 }
             });
+            return; // En dev no hacemos nada más
         }
 
-        // Cuando el SW controla la página (porque se activó uno nuevo via skipWaiting), recargamos
-        // para que el usuario vea la nueva versión inmediatamente.
+        // 2. Handler para cuando el SW cambia (se ha instalado uno nuevo)
         const handleControllerChange = () => {
-            // Evitamos bucle infinito con una bandera de sesión si fuera necesario, 
-            // pero con skipWaiting y una nueva versión real, debería ser seguro.
-            // Opcional: mostrar un toast en lugar de reload forzoso. 
-            // Pero el usuario pidió "actualizar sin hacer nada", así que reload es lo más efectivo.
+            console.log('[PWA] New version found. Reloading...');
             window.location.reload();
         };
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange);
-        }
 
-        return () => {
-            if ('serviceWorker' in navigator) {
+            // 3. Forzar chequeo de actualizaciones periódicamente y al volver a la app
+            const updateServiceWorker = async () => {
+                try {
+                    const registration = await navigator.serviceWorker.ready;
+                    if (registration) {
+                        console.log('[PWA] Checking for updates...');
+                        await registration.update();
+                    }
+                } catch (error) {
+                    console.error('[PWA] Update check failed:', error);
+                }
+            };
+
+            // Chequear al cargar
+            updateServiceWorker();
+
+            // Chequear cada vez que la app vuelve al foco (usuario abre la app)
+            const handleVisibilityChange = () => {
+                if (document.visibilityState === 'visible') {
+                    updateServiceWorker();
+                }
+            };
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+
+            // Chequear cada 1 hora por si acaso
+            const intervalId = setInterval(updateServiceWorker, 60 * 60 * 1000);
+
+            return () => {
                 navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange);
-            }
-        };
+                document.removeEventListener('visibilitychange', handleVisibilityChange);
+                clearInterval(intervalId);
+            };
+        }
     }, []);
 
     return null;
