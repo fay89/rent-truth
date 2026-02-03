@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAuth, UserRole } from "@/contexts/auth-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,32 +19,39 @@ export default function LoginPage() {
 
     const [isLoading, setIsLoading] = useState(false);
 
+    // Keep track of mounted state to avoid setting state on unmounted component
+    const isMounted = useRef(true);
+    useEffect(() => {
+        return () => { isMounted.current = false };
+    }, []);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (email && password) {
             setIsLoading(true);
 
-            // UI Safety Net: Force unlock after 8 seconds if context hangs
+            // UI Safety Net: Force unlock after 8 seconds
+            // Removed 'if (isLoading)' check because it captured stale closure state
             const safetyTimeout = setTimeout(() => {
-                if (isLoading) { // Check if still loading
-                    console.warn("UI Safety Timeout triggered");
+                if (isMounted.current) {
+                    console.warn("UI Safety Timeout triggered - Forcing unlock");
                     setIsLoading(false);
-                    alert("El inicio de sesión está tardando demasiado. \n\nPor favor:\n1. Comprueba tu conexión.\n2. Si persiste, recarga la página (tira hacia abajo) para actualizar la App.");
+                    alert("El sistema no responde. \n\nSe ha forzado el desbloqueo. Por favor:\n1. Revisa tu conexión.\n2. Intenta entrar de nuevo.");
                 }
             }, 8000);
 
             try {
                 const success = await login(email, role, password);
-                clearTimeout(safetyTimeout); // Clear timer on response
+                clearTimeout(safetyTimeout); // Cancel timeout if login completes fast
 
                 if (!success) {
-                    // Alert is already shown by AuthContext for specific errors
+                    // Alert handled by context
                 }
             } catch (err) {
                 console.error("Login trigger error:", err);
                 clearTimeout(safetyTimeout);
             } finally {
-                setIsLoading(false);
+                if (isMounted.current) setIsLoading(false);
             }
         } else {
             alert("Por favor introduce correo y contraseña");
