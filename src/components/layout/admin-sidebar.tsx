@@ -23,9 +23,9 @@ export function AdminSidebar({ className }: { className?: string }) {
     if (!user) return null;
 
     const navItems = [
-        { name: "Verificaciones", href: "/dashboard/admin", icon: ShieldCheck },
-        { name: "Historial", href: "/dashboard/admin/history", icon: FileText },
-        { name: "Usuarios", href: "/dashboard/admin/users", icon: Users },
+        { name: "Dashboard", href: "/dashboard/admin", icon: LayoutDashboard },
+        { name: "Contratos", href: "/dashboard/admin/history", icon: FileText },
+        { name: "Perfiles", href: "/dashboard/admin/users", icon: Users },
     ];
 
     return (
