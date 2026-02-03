@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "./auth-context";
 
-export type ContractStatus = "PENDING" | "VERIFIED" | "ACTIVE" | "ENDED";
+export type ContractStatus = "PENDING" | "PENDING_ADMIN" | "VERIFIED" | "ACTIVE" | "ENDED";
 
 export interface Contract {
     id: string;
@@ -34,7 +34,8 @@ interface DataContextType {
     contracts: Contract[];
     reviews: Review[];
     createContract: (contract: Omit<Contract, "id" | "status" | "createdAt" | "contractUrl">, file?: File | null) => Promise<void>;
-    verifyContract: (contractId: string) => Promise<void>;
+    signContract: (contractId: string) => Promise<void>;
+    adminVerifyContract: (contractId: string) => Promise<void>;
     addReview: (review: Omit<Review, "id" | "createdAt" | "rating"> & { categories: Record<string, number> }) => Promise<void>;
     getContractsByLandlord: (email: string) => Contract[];
     getContractsByTenant: (email: string) => Contract[];
@@ -166,15 +167,32 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const verifyContract = async (contractId: string) => {
+    const signContract = async (contractId: string) => {
+        // User action: Signs contract -> Moves to PENDING_ADMIN
         const { error } = await supabase
             .from('contracts')
-            .update({ status: 'VERIFIED' })
+            .update({ status: 'PENDING_ADMIN' })
             .eq('id', contractId);
 
         if (error) {
-            alert("Error verificando: " + error.message);
+            alert("Error firmando contrato: " + error.message);
         } else {
+            alert("Contrato firmado. Esperando verificación del administrador.");
+            fetchContracts();
+        }
+    };
+
+    const adminVerifyContract = async (contractId: string) => {
+        // ADMIN FUNCTION: Unlocks functionality for users
+        const { error } = await supabase
+            .from('contracts')
+            .update({ status: 'VERIFIED' }) // Verified by Admin => Ready for reviews/activity
+            .eq('id', contractId);
+
+        if (error) {
+            alert("Error verificando (Admin): " + error.message);
+        } else {
+            // alert("Contrato verificado correctamente.");
             fetchContracts();
         }
     };
@@ -251,7 +269,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
                 contracts,
                 reviews,
                 createContract,
-                verifyContract,
+                signContract,
+                adminVerifyContract,
                 addReview,
                 getContractsByLandlord,
                 getContractsByTenant,

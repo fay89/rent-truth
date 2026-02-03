@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-export type UserRole = "TENANT" | "LANDLORD";
+export type UserRole = "TENANT" | "LANDLORD" | "ADMIN";
 
 export interface User {
     id: string;
@@ -220,6 +220,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 if (!userProfile) {
                     alert("Login correcto pero no se pudo cargar tu perfil.");
                     return false;
+                }
+
+                if (userProfile.role === 'ADMIN') {
+                    router.push("/dashboard/admin");
+                    return true;
                 }
 
                 if (userProfile.role !== role) {
