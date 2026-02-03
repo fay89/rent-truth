@@ -19,7 +19,9 @@ export default function TenantDashboard() {
     const [isPublic, setIsPublic] = useState(true);
     const [allowRequests, setAllowRequests] = useState(false);
 
-    const contracts = user ? getContractsByTenant(user.email) : [];
+    if (!user) return null;
+
+    const contracts = getContractsByTenant(user.email);
     const activeContracts = contracts.filter(c => c.status === "ACTIVE" || c.status === "VERIFIED"); // Used in summary?
     const pendingContracts = contracts.filter(c => c.status === "PENDING");
 
