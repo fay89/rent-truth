@@ -183,20 +183,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (data.user) {
                 console.log("Autenticación exitosa. Obteniendo perfil...");
 
-                // Intento directo de obtener perfil
-                const userProfile = await fetchProfile(data.user.id, data.user.email!);
+                // Intento directo de obtener perfil con TIMEOUT DE SEGURIDAD
+                // Si fetchProfile se cuelga, cortamos a los 4 segundos para no dejar al usuario tirado
+                const profilePromise = fetchProfile(data.user.id, data.user.email!);
+                const timeoutPromise = new Promise<{ timeout: true }>((resolve) =>
+                    setTimeout(() => resolve({ timeout: true }), 4000)
+                );
+
+                // @ts-ignore - TS might complain about mixing types but we handle it
+                const result = await Promise.race([profilePromise, timeoutPromise]);
+                const userProfile = (result && 'timeout' in result) ? null : result as User | null;
 
                 if (!userProfile) {
-                    // Si falla el perfil, NO bloqueamos.
-                    // Probablemente el listener lo capture o sea un fallo temporal.
-                    // Redirigimos basándonos en el rol solicitado como fallback optimista.
-                    console.warn("No se pudo cargar el perfil inmediatamente. Usando rol solicitado como fallback.");
+                    // Si falla el perfil O salta el timeout
+                    console.warn("[Auth] Perfil lento o no disponible. Activando protocolo de escape (Fallback).");
 
-                    setIsLoading(false); // Liberar UI
+                    setIsLoading(false); // Liberar UI Context
+
+                    // Fallback directo basado en el rol solicitado
                     if (role === "LANDLORD") {
                         router.push("/dashboard/landlord");
                     } else if (role === "ADMIN") {
-                        // Admin requires stricter check usually, but for now allow flow
                         router.push("/dashboard/admin");
                     } else {
                         router.push("/dashboard/tenant");
