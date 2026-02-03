@@ -51,13 +51,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     .from('profiles')
                     .select('*')
                     .eq('id', userId)
-                    .single();
+                    .maybeSingle();
 
-                if (error && error.code !== "PGRST116") { // PGRST116 is "Row not found"
+                if (error) {
                     // Check if error is actually an AbortError wrapped by Supabase
                     const isAbort = error.message?.includes('AbortError') ||
                         error.message?.includes('aborted') ||
-                        error.code === '20'; // Sometimes code 20 is generic/abort related in some libs, but message checks are safer
+                        error.code === '20';
 
                     if (isAbort) {
                         console.debug(`Attempt ${attempts} aborted (Supabase error). Navigation likely occurred.`);
@@ -94,10 +94,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     // FALLBACK
                     console.warn("Profile missing. Attempting fallback creation...");
 
-                    const { data: { session } } = await supabase.auth.getSession();
-                    const metadata = session?.user?.user_metadata || {};
-                    const fallbackRole = metadata.role || "TENANT";
-                    const fallbackName = metadata.name || email.split('@')[0];
+                    const fallbackRole = "TENANT";
+                    const fallbackName = email.split('@')[0];
 
                     const { data: newProfile, error: insertError } = await supabase
                         .from('profiles')
@@ -249,7 +247,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
             // Create a timeout promise that rejects after 15 seconds
             const timeoutPromise = new Promise<boolean>((_, reject) => {
-                setTimeout(() => reject(new Error("Login timed out")), 15000);
+                setTimeout(() => reject(new Error("Login timed out")), 25000);
             });
 
             // Race them
