@@ -9,7 +9,9 @@ import {
     Settings,
     LogOut,
     UserCog,
-    CheckCircle2
+    CheckCircle2,
+    FileText,
+    Users
 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { APP_VERSION } from "@/lib/version";
@@ -22,9 +24,8 @@ export function AdminSidebar({ className }: { className?: string }) {
 
     const navItems = [
         { name: "Verificaciones", href: "/dashboard/admin", icon: ShieldCheck },
-        // Future expansion
-        // { name: "Usuarios", href: "/dashboard/admin/users", icon: UserCog },
-        { name: "Ajustes", href: "/dashboard/settings", icon: Settings },
+        { name: "Historial", href: "/dashboard/admin/history", icon: FileText },
+        { name: "Usuarios", href: "/dashboard/admin/users", icon: Users },
     ];
 
     return (
