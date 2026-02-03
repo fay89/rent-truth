@@ -202,30 +202,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const login = async (email: string, role: UserRole, password?: string): Promise<boolean> => {
         if (!password) return false;
 
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email,
-            password
-        });
+        // Wrap the actual login logic in a race with a timeout
+        const loginPromise = async () => {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password
+            });
 
-        if (error) {
-            console.warn("Login warning:", error.message);
-            alert("Credenciales incorrectas. Por favor, inténtalo de nuevo.");
-            return false;
-        }
-
-        if (data.user) {
-            // Force fetch profile to ensure we have the role
-            const userProfile = await fetchProfile(data.user.id, data.user.email!);
-
-            if (!userProfile) {
-                alert("Login correcto pero no se pudo cargar tu perfil.");
+            if (error) {
+                console.warn("Login warning:", error.message);
+                alert("Credenciales incorrectas. Por favor, inténtalo de nuevo.");
                 return false;
             }
 
-            if (userProfile.role !== role) {
-                alert(`Atención: Estás registrado como ${userProfile.role === 'TENANT' ? 'Inquilino' : 'Propietario'}. Te redirigiremos a tu panel correspondiente.`);
-                // Proceed anyway, but redirect to the CORRECT dashboard
-                if (userProfile.role === "LANDLORD") {
+            if (data.user) {
+                // Force fetch profile to ensure we have the role
+                const userProfile = await fetchProfile(data.user.id, data.user.email!);
+
+                if (!userProfile) {
+                    alert("Login correcto pero no se pudo cargar tu perfil.");
+                    return false;
+                }
+
+                if (userProfile.role !== role) {
+                    alert(`Atención: Estás registrado como ${userProfile.role === 'TENANT' ? 'Inquilino' : 'Propietario'}. Te redirigiremos a tu panel correspondiente.`);
+                    // Proceed anyway, but redirect to the CORRECT dashboard
+                    if (userProfile.role === "LANDLORD") {
+                        router.push("/dashboard/landlord");
+                    } else {
+                        router.push("/dashboard/tenant");
+                    }
+                    return true;
+                }
+
+                if (role === "LANDLORD") {
                     router.push("/dashboard/landlord");
                 } else {
                     router.push("/dashboard/tenant");
@@ -233,15 +243,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 return true;
             }
 
-            if (role === "LANDLORD") {
-                router.push("/dashboard/landlord");
-            } else {
-                router.push("/dashboard/tenant");
-            }
-            return true;
-        }
+            return false;
+        };
 
-        return false;
+        try {
+            // Create a timeout promise that rejects after 15 seconds
+            const timeoutPromise = new Promise<boolean>((_, reject) => {
+                setTimeout(() => reject(new Error("Login timed out")), 15000);
+            });
+
+            // Race them
+            return await Promise.race([loginPromise(), timeoutPromise]);
+        } catch (error: any) {
+            console.error("Login critical error:", error);
+            if (error.message === "Login timed out") {
+                alert("El inicio de sesión está tardando demasiado. Por favor, comprueba tu conexión e inténtalo de nuevo.");
+            } else {
+                alert("Error crítico durante el inicio de sesión. Inténtalo de nuevo.");
+            }
+            return false;
+        }
     };
 
     const register = async (email: string, role: UserRole, password?: string, name?: string) => {
