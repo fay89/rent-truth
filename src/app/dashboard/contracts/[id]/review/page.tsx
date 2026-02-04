@@ -52,8 +52,9 @@ export default function ReviewContractPage() {
     useEffect(() => {
         if (!user || !contract) return;
 
-        // Check if contract is verified
-        if (contract.status === "PENDING" || contract.status === "PENDING_ADMIN" || contract.status === "REJECTED") {
+        // Check if contract is verified (Allow-list approach)
+        const allowedStatuses = ["VERIFIED", "ACTIVE", "ENDED"];
+        if (!allowedStatuses.includes(contract.status)) {
             alert("El contrato debe ser verificado por un administrador antes de poder enviar valoraciones.");
             router.push("/dashboard/contracts");
             return;

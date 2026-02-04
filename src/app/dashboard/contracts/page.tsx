@@ -136,16 +136,22 @@ export default function ContractsPage() {
                                         </div>
 
                                         <div className="flex items-center gap-3">
-                                            {contract.status === "ENDED" ? (
-                                                <Button disabled variant="secondary" className="bg-neutral-100 text-neutral-400 cursor-not-allowed">
-                                                    <Star className="w-4 h-4 mr-2" /> Valorar
-                                                </Button>
-                                            ) : (
+                                            {(contract.status === "VERIFIED" || contract.status === "ACTIVE") ? (
                                                 <Link href={`/dashboard/contracts/${contract.id}/review`}>
                                                     <Button variant="default" className="bg-brand-blue hover:bg-brand-blue/90 text-white">
                                                         <Star className="w-4 h-4 mr-2" /> Valorar
                                                     </Button>
                                                 </Link>
+                                            ) : contract.status === "ENDED" ? (
+                                                <Link href={`/dashboard/contracts/${contract.id}/review`}>
+                                                    <Button variant="secondary" className="bg-brand-green/20 text-brand-green hover:bg-brand-green/30">
+                                                        <Star className="w-4 h-4 mr-2" /> Valorar Final
+                                                    </Button>
+                                                </Link>
+                                            ) : (
+                                                <Button disabled variant="secondary" className="bg-neutral-100 text-neutral-400 cursor-not-allowed" title="Requiere verificación por Admin">
+                                                    <Star className="w-4 h-4 mr-2" /> Valorar
+                                                </Button>
                                             )}
                                             <Link href={`/dashboard/contracts/${contract.id}`}>
                                                 <Button variant="outline" className="text-neutral-600 hover:text-brand-blue hover:border-brand-blue">Ver detalles</Button>
