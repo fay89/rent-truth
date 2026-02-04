@@ -126,7 +126,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         if (file) {
             const fileName = `${Date.now()}_${file.name.replace(/\s+/g, '-')}`;
             const { data: uploadData, error: uploadError } = await supabase.storage
-                .from('contracts')
+                .from('rent-files') // Changed from 'contracts'
                 .upload(fileName, file);
 
             if (uploadError) {

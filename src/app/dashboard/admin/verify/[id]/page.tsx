@@ -108,7 +108,7 @@ export default function VerifyContractPage() {
                             <p className="text-sm font-semibold mb-2">Documento Adjunto</p>
                             {contract.contractUrl ? (
                                 <a
-                                    href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/contracts/${contract.contractUrl}`}
+                                    href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/rent-files/${contract.contractUrl}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="flex items-center gap-2 p-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
