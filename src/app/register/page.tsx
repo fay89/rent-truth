@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { ShieldCheck, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, CheckCircle2, User, Mail, Lock, Eye, EyeOff, Building2, UserCircle2 } from "lucide-react";
+import { APP_VERSION } from "@/lib/version";
 
 export default function RegisterPage() {
     const { register } = useAuth();
@@ -16,95 +17,114 @@ export default function RegisterPage() {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [role, setRole] = useState<UserRole>("TENANT");
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // In a real app we would send name and password to the backend here
-        if (email && password) {
+        if (email && password && name) {
+            setIsLoading(true);
             const fullName = `${name} ${surname}`.trim();
-            register(email, role, password, fullName);
+            try {
+                await register(email, role, password, fullName);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setIsLoading(false);
+            }
         }
     };
 
     return (
-        <div className="min-h-screen grid md:grid-cols-2 bg-brand-light-gray font-sans">
+        <div className="min-h-screen grid lg:grid-cols-2">
             {/* Left Column (Brand/Info) */}
-            <div className="hidden md:flex flex-col justify-between p-12 bg-subtle-gradient text-white relative overflow-hidden bg-brand-blue">
-                <div className="z-10">
-                    <Link href="/" className="flex items-center gap-2 mb-12 hover:opacity-90 w-fit">
-                        <ShieldCheck className="h-8 w-8 text-white" />
-                        <span className="text-2xl font-bold">RentTruth</span>
+            <div className="hidden lg:flex flex-col justify-between p-16 bg-brand-blue relative overflow-hidden text-white">
+                {/* Background Decor */}
+                <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-brand-green/20 via-transparent to-transparent opacity-40"></div>
+
+                <div className="relative z-10">
+                    <Link href="/" className="flex items-center gap-3 mb-16 hover:opacity-90 transition-opacity w-fit group">
+                        <div className="bg-white/10 p-2 rounded-lg group-hover:bg-white/20 transition-colors">
+                            <ShieldCheck className="h-8 w-8 text-brand-green" />
+                        </div>
+                        <span className="text-2xl font-bold tracking-tight">RentTruth</span>
                     </Link>
-                    <h2 className="text-4xl lg:text-5xl font-extrabold mb-8 leading-tight">
-                        Empieza a construir tu reputación hoy.
+
+                    <h2 className="text-5xl font-extrabold mb-8 leading-[1.15] tracking-tight">
+                        Tu reputación es tu mayor <span className="text-brand-green">activo.</span>
                     </h2>
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-3 text-lg text-blue-100">
-                            <CheckCircle2 className="h-6 w-6 text-brand-green" />
-                            <span>Totalmente gratuito</span>
-                        </div>
-                        <div className="flex items-center gap-3 text-lg text-blue-100">
-                            <CheckCircle2 className="h-6 w-6 text-brand-green" />
-                            <span>Verificación segura</span>
-                        </div>
-                        <div className="flex items-center gap-3 text-lg text-blue-100">
-                            <CheckCircle2 className="h-6 w-6 text-brand-green" />
-                            <span>Acceso a mejores alquileres</span>
-                        </div>
+
+                    <p className="text-lg text-blue-100/80 max-w-md mb-12 leading-relaxed">
+                        Crea una cuenta gratuita y comienza a construir un historial de alquiler verificable que te abrirá puertas.
+                    </p>
+
+                    <div className="space-y-6">
+                        <FeatureRow text="Totalmente gratuito para siempre" />
+                        <FeatureRow text="Verificación biométrica segura" />
+                        <FeatureRow text="Acceso a inquilinos y propietarios verificados" />
                     </div>
                 </div>
-                <div className="z-10 text-sm text-blue-200 mt-12">
-                    &copy; {new Date().getFullYear()} RentTruth. Puntuación Verificada.
+
+                <div className="relative z-10 text-xs text-blue-200/50 flex justify-between items-end">
+                    <span>&copy; {new Date().getFullYear()} RentTruth Security.</span>
+                    <span>v{APP_VERSION}</span>
                 </div>
             </div>
 
             {/* Right Column (Form) */}
-            <div className="flex items-center justify-center p-6 bg-white shadow-xl">
-                <div className="w-full max-w-md space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="text-center md:text-left mb-8">
-                        <div className="md:hidden flex justify-center mb-6">
-                            <ShieldCheck className="h-10 w-10 text-brand-blue" />
+            <div className="flex items-center justify-center p-6 md:p-12 bg-background">
+                <div className="w-full max-w-[480px] space-y-8">
+                    <div className="text-center lg:text-left space-y-2">
+                        <div className="lg:hidden flex justify-center mb-6">
+                            <div className="bg-brand-blue/5 p-3 rounded-xl">
+                                <ShieldCheck className="h-10 w-10 text-brand-blue" />
+                            </div>
                         </div>
-                        <h2 className="text-3xl font-bold text-brand-blue mb-2">Crear nueva cuenta</h2>
-                        <p className="text-neutral-500">Únete a la comunidad de alquileres transparentes.</p>
+                        <h2 className="text-3xl font-bold text-brand-blue tracking-tight">Crear cuenta</h2>
+                        <p className="text-neutral-500">Únete a la comunidad de confianza.</p>
                     </div>
 
-                    <div className="bg-neutral-100 p-1.5 rounded-xl grid grid-cols-2 mb-6 gap-1">
+                    {/* Role Selector */}
+                    <div className="bg-neutral-100/50 p-1 rounded-xl grid grid-cols-2 gap-1 border border-neutral-200/50">
                         <button
                             type="button"
                             onClick={() => setRole("TENANT")}
-                            className={`py-2 text-sm font-semibold rounded-lg transition-all duration-200 ${role === "TENANT" ? "bg-white text-brand-blue shadow-sm" : "text-neutral-500 hover:text-brand-blue hover:bg-neutral-200/50"}`}
+                            className={`flex items-center justify-center gap-2 py-3 text-sm font-semibold rounded-lg transition-all duration-300 ${role === "TENANT" ? "bg-white text-brand-blue shadow-sm ring-1 ring-black/5" : "text-neutral-500 hover:text-brand-blue hover:bg-neutral-200/50"}`}
                         >
-                            Soy Inquilino
+                            <User className="w-4 h-4" />
+                            Inquilino
                         </button>
                         <button
                             type="button"
                             onClick={() => setRole("LANDLORD")}
-                            className={`py-2 text-sm font-semibold rounded-lg transition-all duration-200 ${role === "LANDLORD" ? "bg-white text-brand-blue shadow-sm" : "text-neutral-500 hover:text-brand-blue hover:bg-neutral-200/50"}`}
+                            className={`flex items-center justify-center gap-2 py-3 text-sm font-semibold rounded-lg transition-all duration-300 ${role === "LANDLORD" ? "bg-white text-brand-blue shadow-sm ring-1 ring-black/5" : "text-neutral-500 hover:text-brand-blue hover:bg-neutral-200/50"}`}
                         >
-                            Soy Propietario
+                            <Building2 className="w-4 h-4" />
+                            Propietario
                         </button>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-5">
+                    <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="first-name" className="text-brand-blue font-medium ml-1">Nombre</Label>
-                                <Input
-                                    id="first-name"
-                                    placeholder="Juan"
-                                    className="bg-white border-neutral-200 focus-visible:ring-brand-green h-11 rounded-lg"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    required
-                                />
+                                <Label htmlFor="name" className="text-brand-blue font-medium ml-1">Nombre</Label>
+                                <div className="relative group">
+                                    <UserCircle2 className="absolute left-3.5 top-3.5 h-5 w-5 text-neutral-400 group-focus-within:text-brand-blue transition-colors" />
+                                    <Input
+                                        id="name"
+                                        placeholder="Juan"
+                                        className="pl-11 h-12 bg-white border-neutral-200 focus:border-brand-blue/30 focus:ring-brand-blue/10 rounded-xl transition-all"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        required
+                                    />
+                                </div>
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="last-name" className="text-brand-blue font-medium ml-1">Apellidos</Label>
+                                <Label htmlFor="surname" className="text-brand-blue font-medium ml-1">Apellidos</Label>
                                 <Input
-                                    id="last-name"
+                                    id="surname"
                                     placeholder="Pérez"
-                                    className="bg-white border-neutral-200 focus-visible:ring-brand-green h-11 rounded-lg"
+                                    className="h-12 bg-white border-neutral-200 focus:border-brand-blue/30 focus:ring-brand-blue/10 rounded-xl transition-all"
                                     value={surname}
                                     onChange={(e) => setSurname(e.target.value)}
                                     required
@@ -114,23 +134,28 @@ export default function RegisterPage() {
 
                         <div className="space-y-2">
                             <Label htmlFor="email" className="text-brand-blue font-medium ml-1">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                className="bg-white border-neutral-200 focus-visible:ring-brand-green h-11 rounded-lg"
-                                placeholder="tu@email.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                            />
+                            <div className="relative group">
+                                <Mail className="absolute left-3.5 top-3.5 h-5 w-5 text-neutral-400 group-focus-within:text-brand-blue transition-colors" />
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    className="pl-11 h-12 bg-white border-neutral-200 focus:border-brand-blue/30 focus:ring-brand-blue/10 rounded-xl transition-all"
+                                    placeholder="nombre@ejemplo.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
                         </div>
+
                         <div className="space-y-2">
                             <Label htmlFor="password" className="text-brand-blue font-medium ml-1">Contraseña</Label>
-                            <div className="relative">
+                            <div className="relative group">
+                                <Lock className="absolute left-3.5 top-3.5 h-5 w-5 text-neutral-400 group-focus-within:text-brand-blue transition-colors" />
                                 <Input
                                     id="password"
                                     type={showPassword ? "text" : "password"}
-                                    className="bg-white border-neutral-200 focus-visible:ring-brand-green h-11 rounded-lg pr-10"
+                                    className="pl-11 pr-11 h-12 bg-white border-neutral-200 focus:border-brand-blue/30 focus:ring-brand-blue/10 rounded-xl transition-all"
                                     placeholder="••••••••"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
@@ -139,24 +164,49 @@ export default function RegisterPage() {
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-brand-blue bg-transparent border-none"
+                                    className="absolute right-0 top-0 h-full px-4 flex items-center text-neutral-400 hover:text-brand-blue transition-colors"
                                 >
-                                    {showPassword ? "👁️" : "👁️‍🗨️"}
+                                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                                 </button>
                             </div>
                             <p className="text-xs text-neutral-400 ml-1">Mínimo 8 caracteres</p>
                         </div>
 
-                        <Button type="submit" className="w-full h-12 text-lg font-bold bg-brand-green hover:bg-brand-green/90 text-white shadow-lg shadow-brand-green/20 rounded-lg mt-2 transition-all hover:scale-[1.02] active:scale-[0.98]">
-                            Crear Cuenta
+                        <Button
+                            type="submit"
+                            disabled={isLoading}
+                            className="w-full h-12 text-base font-bold bg-brand-green hover:bg-brand-green/90 text-white shadow-lg shadow-brand-green/20 rounded-xl mt-4 transition-all hover:translate-y-[-1px] active:translate-y-[1px] disabled:opacity-70 disabled:hover:translate-y-0"
+                        >
+                            {isLoading ? (
+                                <div className="flex items-center gap-2">
+                                    <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    <span>Creando cuenta...</span>
+                                </div>
+                            ) : (
+                                "Crear Cuenta"
+                            )}
                         </Button>
                     </form>
 
-                    <div className="text-center text-sm text-neutral-500 mt-6">
-                        ¿Ya tienes cuenta? <Link href="/login" className="text-brand-blue font-bold hover:underline transition-colors ml-1">Inicia sesión</Link>
+                    <div className="text-center text-sm text-neutral-500">
+                        ¿Ya tienes cuenta?{" "}
+                        <Link href="/login" className="text-brand-blue font-bold hover:underline transition-colors">
+                            Inicia sesión
+                        </Link>
                     </div>
                 </div>
             </div>
+        </div>
+    );
+}
+
+function FeatureRow({ text }: { text: string }) {
+    return (
+        <div className="flex items-center gap-4 text-white/90 group">
+            <div className="bg-brand-green/10 p-2 rounded-full group-hover:bg-brand-green/20 transition-colors">
+                <CheckCircle2 className="h-5 w-5 text-brand-green" />
+            </div>
+            <span className="font-medium tracking-wide">{text}</span>
         </div>
     );
 }

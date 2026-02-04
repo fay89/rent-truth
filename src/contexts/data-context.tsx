@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { useAuth } from "./auth-context";
+import { useAuth, User } from "./auth-context";
 
 export type ContractStatus = "PENDING" | "PENDING_ADMIN" | "VERIFIED" | "ACTIVE" | "ENDED";
 
@@ -33,6 +33,7 @@ export interface Review {
 interface DataContextType {
     contracts: Contract[];
     reviews: Review[];
+    users: User[];
     createContract: (contract: Omit<Contract, "id" | "status" | "createdAt" | "contractUrl">, file?: File | null) => Promise<void>;
     signContract: (contractId: string) => Promise<void>;
     adminVerifyContract: (contractId: string) => Promise<void>;
@@ -48,6 +49,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     const { user } = useAuth();
     const [contracts, setContracts] = useState<Contract[]>([]);
     const [reviews, setReviews] = useState<Review[]>([]);
+    const [users, setUsers] = useState<User[]>([]);
 
     const fetchContracts = React.useCallback(async () => {
         if (!user) return;
@@ -108,15 +110,44 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         }
     }, []);
 
+    const fetchUsers = React.useCallback(async () => {
+        if (user?.role !== 'ADMIN') return;
+
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('*');
+
+        if (error) {
+            console.error("Error fetching users:", error);
+            return;
+        }
+
+        if (data) {
+            const mappedUsers: User[] = data.map((u: any) => ({
+                id: u.id,
+                name: u.name || u.email.split('@')[0],
+                email: u.email,
+                role: u.role,
+                emailVerified: u.email_verified || false,
+                photoUrl: u.photo_url,
+                phoneVerified: u.phone_verified || false,
+                identityVerified: u.identity_verified || false,
+                identityStatus: u.identity_status || 'PENDING'
+            }));
+            setUsers(mappedUsers);
+        }
+    }, [user]);
+
     // Load data when user is present
-    // Load data when user is present
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         if (user) {
             fetchContracts();
             fetchReviews();
+            if (user.role === 'ADMIN') {
+                fetchUsers();
+            }
         }
-    }, [user, fetchContracts, fetchReviews]);
+    }, [user, fetchContracts, fetchReviews, fetchUsers]);
 
     const createContract = async (contractData: Omit<Contract, "id" | "status" | "createdAt" | "contractUrl">, file?: File | null) => {
         if (!user) return;
@@ -282,6 +313,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
             value={{
                 contracts,
                 reviews,
+                users,
                 createContract,
                 signContract,
                 adminVerifyContract,

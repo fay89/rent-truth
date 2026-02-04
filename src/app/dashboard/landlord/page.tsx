@@ -1,13 +1,14 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
 import { useData } from "@/contexts/data-context";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Circle, FileText, Shield, ArrowRight, Plus, Star } from "lucide-react";
+import { CheckCircle2, Circle, FileText, Shield, ArrowUpRight, Plus, Star, Users, Building2, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { ShareReputationDialog } from "@/components/share-reputation-dialog";
+import { cn } from "@/lib/utils";
 
 export default function LandlordDashboard() {
     const { user } = useAuth();
@@ -17,199 +18,196 @@ export default function LandlordDashboard() {
 
     const contracts = getContractsByLandlord(user.email);
     const pendingContracts = contracts.filter(c => c.status === "PENDING" || c.status === "VERIFIED");
-    const activeContractsData = contracts.filter(c => c.status === "ACTIVE" || c.status === "ENDED");
+    const activeContracts = contracts.filter(c => c.status === "ACTIVE").length;
 
-    // Logic for checklist (Landlord)
+    // Metrics
+    const myReviews = reviews.filter(r => r.targetId === user.email);
+    const rating = myReviews.length > 0
+        ? (myReviews.reduce((acc, r) => acc + r.rating, 0) / myReviews.length).toFixed(1)
+        : "N/A";
+
     const hasProfile = user.identityVerified;
-    const hasCreatedContract = contracts.length > 0;
-    const hasReview = reviews.some(r => r.targetId === user.email);
+    const hasContract = contracts.length > 0;
+    const hasReview = myReviews.length > 0;
 
     return (
-        <div className="space-y-5 md:space-y-8 animate-in fade-in duration-500 w-full max-w-full overflow-x-hidden">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 w-full max-w-full">
-                <div className="min-w-0">
-                    <h1 className="text-2xl md:text-3xl font-bold text-brand-blue flex items-center gap-2 truncate">
-                        Hola, {user.name} <span className="text-xl md:text-2xl">👋</span>
-                    </h1>
-                    <p className="text-sm md:text-base text-neutral-500 truncate">Gestiona tus propiedades y contratos.</p>
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            {/* Hero / Stats Row */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Portfolio Value / Identity - Hero Card */}
+                <div className="md:col-span-1 bg-[#1e293b] rounded-3xl p-8 text-white shadow-2xl shadow-slate-900/10 relative overflow-hidden group border border-slate-700/50">
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-brand-green/10 rounded-full blur-3xl group-hover:bg-brand-green/20 transition-colors"></div>
+                    <div className="relative z-10 flex flex-col h-full justify-between">
+                        <div>
+                            <div className="flex items-center gap-2 mb-2 text-slate-400">
+                                <Building2 className="w-5 h-5" />
+                                <span className="font-semibold tracking-wide text-sm uppercase">Mis Propiedades</span>
+                            </div>
+                            <div className="flex items-baseline gap-2">
+                                <span className="text-5xl font-extrabold tracking-tighter">{contracts.length}</span>
+                                <span className="text-xl text-slate-500">Total</span>
+                            </div>
+                            <div className="mt-4 flex gap-3">
+                                <div className="px-3 py-1 rounded-full bg-slate-800 text-xs text-slate-300 border border-slate-700">
+                                    {activeContracts} Activos
+                                </div>
+                                <div className="px-3 py-1 rounded-full bg-slate-800 text-xs text-slate-300 border border-slate-700">
+                                    {pendingContracts.length} Pendientes
+                                </div>
+                            </div>
+                        </div>
+                        <div className="mt-8">
+                            <Link href="/dashboard/contracts/new">
+                                <Button className="w-full bg-brand-green hover:bg-brand-green/90 text-white font-bold shadow-lg shadow-brand-green/20">
+                                    <Plus className="w-4 h-4 mr-2" /> Nuevo Contrato
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-4 w-full md:w-auto">
-                    {/* Visual Rating Badge */}
-                    <div className="flex items-center gap-3 bg-white p-2 pr-5 rounded-2xl border border-yellow-100 shadow-sm max-w-full overflow-hidden shrink-0">
-                        <div className="bg-yellow-50 p-2.5 rounded-xl shrink-0">
-                            <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
-                        </div>
-                        <div className="flex flex-col min-w-0">
-                            <div className="flex items-baseline gap-1">
-                                <span className="text-2xl font-black text-brand-blue leading-none">
-                                    {reviews.filter(r => r.targetId === user.email).length > 0
-                                        ? (reviews.filter(r => r.targetId === user.email).reduce((acc, r) => acc + r.rating, 0) / reviews.filter(r => r.targetId === user.email).length).toFixed(1)
-                                        : "N/A"}
-                                </span>
-                                <span className="text-xs text-neutral-400 font-medium">/ 5.0</span>
+                {/* Score & Quick Stats */}
+                <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Reputation Card */}
+                    <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col justify-between group hover:border-brand-blue/20 transition-all">
+                        <div>
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="bg-yellow-50 text-yellow-600 p-2.5 rounded-xl">
+                                    <Star className="w-6 h-6 fill-yellow-500 text-yellow-500" />
+                                </div>
+                                <div className="text-2xl font-black text-slate-800">{rating}</div>
                             </div>
-                            <span className="text-[10px] text-neutral-400 font-semibold uppercase tracking-wider truncate">
-                                {reviews.filter(r => r.targetId === user.email).length} Reseñas
-                            </span>
+                            <h3 className="font-bold text-lg text-slate-800">Reputación</h3>
+                            <p className="text-sm text-slate-500 mt-1 leading-relaxed">
+                                Tienes {myReviews.length} reseñas verificadas. Mantén un buen trato para mejorar tu score.
+                            </p>
+                        </div>
+                        <div className="mt-4">
+                            <ShareReputationDialog />
                         </div>
                     </div>
 
-                    {/* Primary CTA */}
-                    <div className="flex gap-2 shrink-0">
-                        <ShareReputationDialog />
-                        <Link href="/dashboard/contracts/new">
-                            <Button className="h-14 px-6 bg-brand-green hover:bg-brand-green/90 text-white shadow-lg shadow-brand-green/20 rounded-xl text-base font-semibold">
-                                <Plus className="w-5 h-5 mr-2" /> Nuevo Contrato
-                            </Button>
-                        </Link>
+                    {/* Verification / Trust */}
+                    <div className={cn("p-6 rounded-3xl border transition-all h-full flex flex-col justify-between", hasProfile ? "bg-white border-slate-100 shadow-sm" : "bg-red-50 border-red-100")}>
+                        <div>
+                            <div className="flex items-center justify-between mb-4">
+                                <div className={cn("p-2.5 rounded-xl", hasProfile ? "bg-brand-blue/5 text-brand-blue" : "bg-red-100 text-red-500")}>
+                                    <Shield className="w-6 h-6" />
+                                </div>
+                                {!hasProfile && <Badge variant="destructive" className="rounded-full">Vital para ti</Badge>}
+                            </div>
+                            <h3 className="font-bold text-lg text-slate-800">Identidad {hasProfile ? "Verificada" : "Pendiente"}</h3>
+                            <p className="text-sm text-slate-500 mt-1 leading-relaxed">
+                                {hasProfile ? "Tu identidad verificada te protege de fraudes y atrae mejores inquilinos." : "Verifica tu identidad para dar seguridad a tus inquilinos y evitar problemas."}
+                            </p>
+                        </div>
+                        {!hasProfile && (
+                            <Link href="/dashboard/verification" className="mt-4 inline-block">
+                                <Button size="sm" variant="destructive" className="w-full rounded-xl">Verificar Ahora</Button>
+                            </Link>
+                        )}
                     </div>
                 </div>
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-8 w-full max-w-full">
-                {/* Main Column */}
-                <div className="lg:col-span-2 space-y-8 min-w-0 w-full">
+            <div className="grid lg:grid-cols-3 gap-8">
+                {/* Main Content */}
+                <div className="lg:col-span-2 space-y-6">
+                    {/* Header */}
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-xl font-bold text-slate-800 tracking-tight">Mis Contratos & Propiedades</h2>
+                        <Link href="/dashboard/contracts" className="text-sm font-semibold text-brand-blue hover:underline flex items-center gap-1">
+                            Gestionar todo <ArrowUpRight className="w-4 h-4" />
+                        </Link>
+                    </div>
 
-                    {/* Onboarding Checklist */}
-                    <Card className="border-none shadow-sm bg-white w-full max-w-full overflow-hidden">
-                        <CardHeader>
-                            <CardTitle className="text-xl">Tu checklist de propietario</CardTitle>
-                            <CardDescription>Pasos para blindar tus alquileres.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <CheckItem
-                                completed={hasProfile}
-                                title="Verifica tu identidad"
-                                description="Genera confianza a tus futuros inquilinos."
-                            />
-                            <CheckItem
-                                completed={hasCreatedContract}
-                                title="Crea tu primer contrato"
-                                description="Los inquilinos verificados solo pueden opinar con contrato."
-                            />
-                            <CheckItem
-                                completed={hasReview}
-                                title="Recibe valoraciones"
-                                description="Acumula reviews positivas para destacar tu perfil."
-                            />
-                        </CardContent>
-                    </Card>
-
-                    {/* Active Contracts Summary */}
-                    <Card className="border-none shadow-sm w-full max-w-full overflow-hidden">
-                        <CardHeader className="flex flex-row items-center justify-between gap-4">
-                            <div className="min-w-0">
-                                <CardTitle className="truncate">Mis Propiedades/Contratos</CardTitle>
-                                <CardDescription className="truncate">Resumen de tus alquileres actuales.</CardDescription>
-                            </div>
-                            <Button variant="outline" size="sm" asChild className="shrink-0">
-                                <Link href="/dashboard/contracts">Ver todos</Link>
-                            </Button>
-                        </CardHeader>
-                        <CardContent>
-                            {contracts.length === 0 ? (
-                                <div className="text-center py-12 text-neutral-500 bg-neutral-50 rounded-lg border border-dashed border-neutral-200">
-                                    <div className="bg-blue-50 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
-                                        <Plus className="w-6 h-6 text-brand-blue" />
-                                    </div>
-                                    <p className="font-medium text-brand-blue mb-1">No tienes contratos activos</p>
-                                    <p className="text-sm mb-4">Crea un contrato para empezar a recibir reviews.</p>
-                                    <Link href="/dashboard/contracts/new">
-                                        <Button variant="outline" className="border-brand-blue text-brand-blue hover:bg-blue-50">
-                                            Crear contrato
-                                        </Button>
-                                    </Link>
+                    {/* Contract List */}
+                    <div className="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
+                        {contracts.length === 0 ? (
+                            <div className="text-center py-20 px-6">
+                                <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <Plus className="w-10 h-10 text-slate-300" />
                                 </div>
-                            ) : (
-                                <div className="space-y-4 w-full">
-                                    {contracts.slice(0, 3).map((contract) => (
-                                        <Link href={`/dashboard/contracts/${contract.id}`} key={contract.id} className="block group w-full">
-                                            <div className="flex items-center justify-between p-4 rounded-lg border border-neutral-100 bg-white hover:border-brand-blue/30 hover:shadow-sm transition-all cursor-pointer w-full gap-4">
-                                                <div className="flex items-center gap-4 min-w-0 flex-1">
-                                                    <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-colors shrink-0">
-                                                        <FileText className="w-5 h-5" />
-                                                    </div>
-                                                    <div className="min-w-0 flex-1">
-                                                        <p className="font-medium text-brand-blue truncate">{contract.propertyAddress}</p>
-                                                        <p className="text-xs text-neutral-500 truncate">Inquilino: {contract.tenantEmail}</p>
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center gap-2 shrink-0">
-                                                    <Badge variant="outline" className={
-                                                        contract.status === "VERIFIED" ? "bg-green-50 text-green-700 border-green-200" :
-                                                            contract.status === "PENDING" ? "bg-yellow-50 text-yellow-700 border-yellow-200" : ""
-                                                    }>
-                                                        {contract.status === "VERIFIED" ? "Verificado" : contract.status === "PENDING" ? "Pendiente" : contract.status}
+                                <h3 className="text-slate-800 font-bold text-lg mb-2">Comienza ahora</h3>
+                                <p className="text-slate-500 max-w-sm mx-auto mb-8">
+                                    Crea tu primer contrato digital. Es gratuito, seguro y te permite recibir valoraciones reales.
+                                </p>
+                                <Link href="/dashboard/contracts/new">
+                                    <Button size="lg" className="rounded-full px-8 bg-brand-blue hover:bg-slate-800">
+                                        Crear Primer Contrato
+                                    </Button>
+                                </Link>
+                            </div>
+                        ) : (
+                            <div className="divide-y divide-slate-50">
+                                {contracts.map(contract => (
+                                    <Link href={`/dashboard/contracts/${contract.id}`} key={contract.id} className="flex items-center justify-between p-5 hover:bg-slate-50/50 transition-colors group">
+                                        <div className="flex items-center gap-4">
+                                            <div className="h-12 w-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 shrink-0 group-hover:bg-brand-blue group-hover:text-white transition-colors">
+                                                <FileText className="w-6 h-6" />
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-slate-800 text-lg group-hover:text-brand-blue transition-colors">{contract.propertyAddress}</p>
+                                                <div className="flex items-center gap-3 mt-1">
+                                                    <Badge variant="outline" className={cn("text-[10px] h-5 px-1.5 rounded-md",
+                                                        contract.status === 'VERIFIED' ? "bg-green-50 text-green-700 border-green-200" :
+                                                            contract.status === 'PENDING' ? "bg-orange-50 text-orange-700 border-orange-200" : "bg-slate-100 text-slate-600")}>
+                                                        {contract.status === 'VERIFIED' ? 'Verificado' : contract.status === 'PENDING' ? 'Pendiente' : contract.status}
                                                     </Badge>
-                                                    <ArrowRight className="w-4 h-4 text-neutral-300 group-hover:text-brand-blue group-hover:translate-x-1 transition-all" />
+                                                    <span className="text-xs text-slate-400 flex items-center gap-1">
+                                                        <Users className="w-3 h-3" /> {contract.tenantEmail}
+                                                    </span>
                                                 </div>
                                             </div>
-                                        </Link>
-                                    ))}
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
+                                        </div>
+                                        <div className="text-right hidden sm:block">
+                                            <p className="text-sm font-semibold text-slate-700">Contrato</p>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Sidebar Column */}
-                <div className="space-y-8 min-w-0 w-full">
-                    <Card className="border-none shadow-sm bg-brand-blue text-white w-full max-w-full overflow-hidden">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Shield className="w-5 h-5" /> Protección RentTruth
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <p className="text-sm text-blue-100 break-words">
-                                Tus contratos están protegidos y verificados. Solo los inquilinos con contrato real pueden dejarte reseñas.
-                            </p>
-                            <div className="text-xs bg-white/10 p-3 rounded text-blue-50">
-                                0% Reseñas falsas garantizado
-                            </div>
-                        </CardContent>
-                    </Card>
+                <div className="space-y-6">
+                    {/* Insights Box */}
+                    <div className="bg-gradient-to-br from-indigo-50 to-white border border-indigo-100 rounded-2xl p-6 shadow-sm">
+                        <div className="flex items-center gap-2 mb-4 text-indigo-900">
+                            <TrendingUp className="w-5 h-5" />
+                            <h3 className="font-bold">Rentabilidad</h3>
+                        </div>
+                        <p className="text-sm text-indigo-800/80 leading-relaxed mb-4">
+                            Los propietarios con perfil verificado alquilan un <strong>30% más rápido</strong>.
+                        </p>
+                        <div className="h-1.5 w-full bg-indigo-100 rounded-full overflow-hidden">
+                            <div className="h-full bg-indigo-500 w-[70%]"></div>
+                        </div>
+                    </div>
 
-                    <Card className="border-none shadow-sm w-full max-w-full overflow-hidden">
-                        <CardHeader>
-                            <CardTitle className="text-lg">Consejos para propietarios</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                            <div className="bg-white p-3 rounded-md border border-neutral-100">
-                                <p className="text-sm text-brand-blue font-medium mb-1">Fotos verificadas</p>
-                                <p className="text-xs text-neutral-500 break-words">Sube fotos del estado inicial del piso para evitar disputas.</p>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    {/* Progress */}
+                    <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
+                        <h3 className="font-bold text-slate-800 mb-4">Tu progreso</h3>
+                        <div className="space-y-4">
+                            <ProgressItem label="Perfil Completado" done={hasProfile} />
+                            <ProgressItem label="Primer Contrato" done={hasContract} />
+                            <ProgressItem label="Reviews Recibidas" done={hasReview} />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     );
 }
 
-function CheckItem({ completed, title, description }: { completed: boolean; title: string; description: string }) {
+function ProgressItem({ label, done }: { label: string, done: boolean }) {
     return (
-        <div className={`flex items-start gap-4 p-4 rounded-lg border transition-all ${completed ? "bg-green-50/50 border-green-100" : "bg-white border-neutral-100"}`}>
-            <div className="pt-0.5">
-                {completed ? (
-                    <CheckCircle2 className="w-6 h-6 text-brand-green" />
-                ) : (
-                    <Circle className="w-6 h-6 text-neutral-300" />
-                )}
+        <div className="flex items-center gap-3">
+            <div className={cn("w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-colors", done ? "bg-brand-green text-white" : "bg-slate-100 text-slate-300")}>
+                {done ? <CheckCircle2 className="w-4 h-4" /> : <Circle className="w-4 h-4 dashed" />}
             </div>
-            <div>
-                <h4 className={`font-semibold ${completed ? "text-brand-green" : "text-neutral-700"}`}>{title}</h4>
-                <p className="text-sm text-neutral-500 mt-1">{description}</p>
-            </div>
-            {/* {!completed && (
-                <div className="ml-auto">
-                    <Button variant="ghost" size="sm" className="text-brand-blue hover:text-brand-blue/80 font-medium">
-                        Completar
-                    </Button>
-                </div>
-            )} */}
+            <span className={cn("text-sm font-medium", done ? "text-slate-800" : "text-slate-400")}>{label}</span>
         </div>
     );
 }
