@@ -285,6 +285,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
                 createContract,
                 signContract,
                 adminVerifyContract,
+                adminRejectContract,
                 addReview,
                 getContractsByLandlord,
                 getContractsByTenant,

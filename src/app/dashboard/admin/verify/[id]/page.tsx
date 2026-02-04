@@ -16,7 +16,7 @@ export default function VerifyContractPage() {
     // Let's safe access it.
     const id = params?.id as string;
 
-    const { contracts, adminVerifyContract } = useData();
+    const { contracts, adminVerifyContract, adminRejectContract } = useData();
     const { getPublicUser } = useAuth();
     const router = useRouter();
 
@@ -62,6 +62,19 @@ export default function VerifyContractPage() {
         setIsVerifying(true);
         try {
             await adminVerifyContract(contract.id);
+            router.push("/dashboard/admin");
+        } catch (error) {
+            console.error(error);
+            setIsVerifying(false);
+        }
+    };
+
+    const handleReject = async () => {
+        if (!confirm("¿Seguro que quieres rechazar este contrato?")) return;
+
+        setIsVerifying(true);
+        try {
+            await adminRejectContract(contract.id);
             router.push("/dashboard/admin");
         } catch (error) {
             console.error(error);
