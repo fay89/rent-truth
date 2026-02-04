@@ -181,7 +181,12 @@ export default function VerifyContractPage() {
             {/* Actions */}
             <div className="flex justify-end pt-6 border-t">
                 <div className="flex gap-4">
-                    <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50">
+                    <Button
+                        variant="outline"
+                        className="text-red-600 border-red-200 hover:bg-red-50"
+                        onClick={handleReject}
+                        disabled={isVerifying}
+                    >
                         <XCircle className="h-4 w-4 mr-2" />
                         Rechazar Contrato
                     </Button>

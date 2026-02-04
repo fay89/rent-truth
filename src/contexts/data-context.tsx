@@ -36,6 +36,7 @@ interface DataContextType {
     createContract: (contract: Omit<Contract, "id" | "status" | "createdAt" | "contractUrl">, file?: File | null) => Promise<void>;
     signContract: (contractId: string) => Promise<void>;
     adminVerifyContract: (contractId: string) => Promise<void>;
+    adminRejectContract: (contractId: string) => Promise<void>;
     addReview: (review: Omit<Review, "id" | "createdAt" | "rating"> & { categories: Record<string, number> }) => Promise<void>;
     getContractsByLandlord: (email: string) => Contract[];
     getContractsByTenant: (email: string) => Contract[];
@@ -193,6 +194,19 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
             alert("Error verificando (Admin): " + error.message);
         } else {
             // alert("Contrato verificado correctamente.");
+            fetchContracts();
+        }
+    };
+
+    const adminRejectContract = async (contractId: string) => {
+        const { error } = await supabase
+            .from('contracts')
+            .update({ status: 'REJECTED' })
+            .eq('id', contractId);
+
+        if (error) {
+            alert("Error rechazando contrato: " + error.message);
+        } else {
             fetchContracts();
         }
     };
