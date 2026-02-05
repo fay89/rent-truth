@@ -175,8 +175,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 email,
                 password
             });
+            // Extended timeout to 60s to effectively allow "infinite" wait for slow networks
             const authTimeout = new Promise<{ data: any; error: any }>((_, reject) =>
-                setTimeout(() => reject(new Error("Timeout conectando con servidor")), 15000)
+                setTimeout(() => reject(new Error("Timeout conectando con servidor")), 60000)
             );
 
             const { data, error } = await Promise.race([authPromise, authTimeout])
@@ -195,8 +196,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 // Intento directo de obtener perfil con TIMEOUT DE SEGURIDAD
                 // Si fetchProfile se cuelga, cortamos a los 4 segundos para no dejar al usuario tirado
                 const profilePromise = fetchProfile(data.user.id, data.user.email!);
+                // Extended timeout to 30s for profile fetch
                 const timeoutPromise = new Promise<{ timeout: true }>((resolve) =>
-                    setTimeout(() => resolve({ timeout: true }), 10000)
+                    setTimeout(() => resolve({ timeout: true }), 30000)
                 );
 
                 // @ts-ignore - TS might complain about mixing types but we handle it
