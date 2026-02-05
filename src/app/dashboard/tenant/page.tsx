@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { useData } from "@/contexts/data-context";
 import { Badge } from "@/components/ui/badge";
 import { ShareReputationDialog } from "@/components/share-reputation-dialog";
-import { CheckCircle2, Circle, Clock, FileText, Bell, Shield, ChevronRight, Star, ArrowUpRight, ShieldCheck, QrCode } from "lucide-react";
+import { CheckCircle2, Circle, Clock, FileText, Bell, Shield, ChevronRight, Star, ArrowUpRight, ShieldCheck, QrCode, Zap, Users, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -124,6 +124,45 @@ export default function TenantDashboard() {
                         <Button variant="outline" className="mt-4 w-full rounded-xl border-slate-200 text-slate-600 hover:text-brand-blue hover:bg-slate-50" asChild>
                             <Link href="/dashboard/contracts">Gestión de Contratos</Link>
                         </Button>
+                    </div>
+                </div>
+            </div>
+
+            {/* RentTruth Advantage - Market Insights */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-brand-blue/5 border border-brand-blue/10 p-5 rounded-2xl flex items-start gap-4 hover:bg-brand-blue/10 transition-colors">
+                    <div className="bg-white p-2.5 rounded-xl shadow-sm text-brand-blue shrink-0">
+                        <ShieldCheck className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 text-sm mb-1">Confianza Total</h4>
+                        <p className="text-sm text-slate-600 leading-snug">
+                            El <span className="font-bold text-brand-blue">85% de los propietarios</span> priorizan candidatos con identidad verificada.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="bg-emerald-50 border border-emerald-100 p-5 rounded-2xl flex items-start gap-4 hover:bg-emerald-100/50 transition-colors">
+                    <div className="bg-white p-2.5 rounded-xl shadow-sm text-emerald-600 shrink-0">
+                        <Zap className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 text-sm mb-1">Ultra Rápido</h4>
+                        <p className="text-sm text-slate-600 leading-snug">
+                            Consigue alquiler <span className="font-bold text-emerald-600">3x más rápido</span> al presentar tu historial validado.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="bg-indigo-50 border border-indigo-100 p-5 rounded-2xl flex items-start gap-4 hover:bg-indigo-100/50 transition-colors">
+                    <div className="bg-white p-2.5 rounded-xl shadow-sm text-indigo-600 shrink-0">
+                        <Users className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 text-sm mb-1">+10,000 Inquilinos</h4>
+                        <p className="text-sm text-slate-600 leading-snug">
+                            Únete a la comunidad que está transformando el alquiler en una experiencia <span className="font-bold text-indigo-600">segura y justa</span>.
+                        </p>
                     </div>
                 </div>
             </div>

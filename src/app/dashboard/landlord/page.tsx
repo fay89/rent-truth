@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
 import { useData } from "@/contexts/data-context";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Circle, FileText, Shield, ArrowUpRight, Plus, Star, Users, Building2, TrendingUp } from "lucide-react";
+import { CheckCircle2, Circle, FileText, Shield, ArrowUpRight, Plus, Star, Users, Building2, TrendingUp, Clock, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { ShareReputationDialog } from "@/components/share-reputation-dialog";
 import { cn } from "@/lib/utils";
@@ -122,6 +122,45 @@ export default function LandlordDashboard() {
                 </div>
             </div>
 
+            {/* Market Intelligence - Benefits */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-white border border-slate-100 p-5 rounded-2xl flex items-start gap-4 shadow-sm hover:border-brand-blue/20 transition-colors">
+                    <div className="bg-brand-blue/5 p-2.5 rounded-xl text-brand-blue shrink-0">
+                        <Shield className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 text-sm mb-1">Cero Impagos</h4>
+                        <p className="text-sm text-slate-600 leading-snug">
+                            Reducción del <span className="font-bold text-brand-blue">98% en incidentes</span> al usar contratos validados por RentTruth.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="bg-white border border-slate-100 p-5 rounded-2xl flex items-start gap-4 shadow-sm hover:border-brand-blue/20 transition-colors">
+                    <div className="bg-orange-50 p-2.5 rounded-xl text-orange-600 shrink-0">
+                        <Clock className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 text-sm mb-1">Gestión Ágil</h4>
+                        <p className="text-sm text-slate-600 leading-snug">
+                            Cierra acuerdos en <span className="font-bold text-orange-600">la mitad de tiempo</span> mostrando tu reputación verificada.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="bg-white border border-slate-100 p-5 rounded-2xl flex items-start gap-4 shadow-sm hover:border-brand-blue/20 transition-colors">
+                    <div className="bg-purple-50 p-2.5 rounded-xl text-purple-600 shrink-0">
+                        <Sparkles className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-800 text-sm mb-1">Más Valor</h4>
+                        <p className="text-sm text-slate-600 leading-snug">
+                            Los inquilinos perciben un <span className="font-bold text-purple-600">mayor valor</span> en propiedades con propietarios transparentes.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             <div className="grid lg:grid-cols-3 gap-8">
                 {/* Main Content */}
                 <div className="lg:col-span-2 space-y-6">
@@ -209,7 +248,7 @@ export default function LandlordDashboard() {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 
