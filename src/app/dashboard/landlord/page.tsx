@@ -71,20 +71,23 @@ export default function LandlordDashboard() {
                     {/* Reputation Card */}
                     <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col justify-between group hover:border-brand-blue/20 transition-all">
                         <div>
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="bg-yellow-50 text-yellow-600 p-2.5 rounded-xl">
-                                        <Star className="w-6 h-6 fill-yellow-500 text-yellow-500" />
-                                    </div>
-                                    <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200">
+                            <div className="flex items-center justify-between mb-6">
+                                <div className="flex items-center gap-4">
+                                    <div className="h-20 w-20 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border-2 border-slate-200 shadow-md">
                                         {user.photoUrl ? (
                                             <img src={user.photoUrl} alt={user.name} className="h-full w-full object-cover" />
                                         ) : (
-                                            <span className="text-slate-600 font-bold">{user.name.charAt(0).toUpperCase()}</span>
+                                            <span className="text-slate-600 text-2xl font-bold">{user.name.charAt(0).toUpperCase()}</span>
                                         )}
                                     </div>
+                                    <div className="flex flex-col gap-1">
+                                        <div className="bg-yellow-50 text-yellow-600 p-1.5 rounded-lg w-fit">
+                                            <Star className="w-5 h-5 fill-yellow-500 text-yellow-500" />
+                                        </div>
+                                        <span className="text-xs font-bold uppercase text-slate-400 tracking-wider">Score</span>
+                                    </div>
                                 </div>
-                                <div className="text-2xl font-black text-slate-800">{rating}</div>
+                                <div className="text-4xl font-black text-slate-800 tracking-tighter">{rating}</div>
                             </div>
                             <h3 className="font-bold text-lg text-slate-800">Reputación</h3>
                             <p className="text-sm text-slate-500 mt-1 leading-relaxed">

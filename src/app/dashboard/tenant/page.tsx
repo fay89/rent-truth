@@ -48,17 +48,19 @@ export default function TenantDashboard() {
                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-colors"></div>
                     <div className="relative z-10 flex flex-col h-full justify-between">
                         <div>
-                            <div className="flex items-center gap-3 mb-2">
-                                <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center overflow-hidden border border-white/20 shrink-0">
+                            <div className="flex items-center gap-4 mb-3">
+                                <div className="h-20 w-20 rounded-full bg-white/10 flex items-center justify-center overflow-hidden border-2 border-white/20 shrink-0 shadow-lg">
                                     {user.photoUrl ? (
                                         <img src={user.photoUrl} alt={user.name} className="h-full w-full object-cover" />
                                     ) : (
-                                        <span className="text-white font-bold">{user.name.charAt(0).toUpperCase()}</span>
+                                        <span className="text-white text-2xl font-bold">{user.name.charAt(0).toUpperCase()}</span>
                                     )}
                                 </div>
-                                <div className="flex items-center gap-2 text-blue-200">
-                                    <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                                    <span className="font-semibold tracking-wide text-sm uppercase">Reputación</span>
+                                <div>
+                                    <div className="flex items-center gap-2 text-blue-200 mb-1">
+                                        <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                                        <span className="font-semibold tracking-wide text-sm uppercase">Reputación</span>
+                                    </div>
                                 </div>
                             </div>
                             <div className="flex items-baseline gap-2">
