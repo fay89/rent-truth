@@ -4,8 +4,10 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
-import { useData } from "@/contexts/data-context";
 import { Badge } from "@/components/ui/badge";
+import { useData } from "@/contexts/data-context";
+import { useMarketStats } from "@/hooks/use-market-stats";
+
 import { ShareReputationDialog } from "@/components/share-reputation-dialog";
 import { CheckCircle2, Circle, Clock, FileText, Bell, Shield, ChevronRight, Star, ArrowUpRight, ShieldCheck, QrCode, Zap, Users, TrendingUp } from "lucide-react";
 import Link from "next/link";
@@ -14,6 +16,7 @@ import { cn } from "@/lib/utils";
 export default function TenantDashboard() {
     const { getContractsByTenant, signContract, reviews } = useData();
     const { user } = useAuth();
+    const stats = useMarketStats();
     const [isPublic, setIsPublic] = useState(true);
 
     if (!user) return null;
@@ -137,7 +140,7 @@ export default function TenantDashboard() {
                     <div>
                         <h4 className="font-bold text-slate-800 text-sm mb-1">Confianza Total</h4>
                         <p className="text-sm text-slate-600 leading-snug">
-                            El <span className="font-bold text-brand-blue">85% de los propietarios</span> priorizan candidatos con identidad verificada.
+                            El <span className="font-bold text-brand-blue">{stats.landlordPreference}% de los propietarios</span> priorizan candidatos con identidad verificada.
                         </p>
                     </div>
                 </div>
@@ -149,7 +152,7 @@ export default function TenantDashboard() {
                     <div>
                         <h4 className="font-bold text-slate-800 text-sm mb-1">Ultra Rápido</h4>
                         <p className="text-sm text-slate-600 leading-snug">
-                            Consigue alquiler <span className="font-bold text-emerald-600">3x más rápido</span> al presentar tu historial validado.
+                            Consigue alquiler <span className="font-bold text-emerald-600">{stats.rentalSpeed}x más rápido</span> al presentar tu historial validado.
                         </p>
                     </div>
                 </div>
@@ -159,7 +162,7 @@ export default function TenantDashboard() {
                         <Users className="w-6 h-6" />
                     </div>
                     <div>
-                        <h4 className="font-bold text-slate-800 text-sm mb-1">+10,000 Inquilinos</h4>
+                        <h4 className="font-bold text-slate-800 text-sm mb-1">+{stats.activeTenants.toLocaleString()} Inquilinos</h4>
                         <p className="text-sm text-slate-600 leading-snug">
                             Únete a la comunidad que está transformando el alquiler en una experiencia <span className="font-bold text-indigo-600">segura y justa</span>.
                         </p>

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
 import { useData } from "@/contexts/data-context";
+import { useMarketStats } from "@/hooks/use-market-stats";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Circle, FileText, Shield, ArrowUpRight, Plus, Star, Users, Building2, TrendingUp, Clock, Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -12,6 +13,7 @@ import { cn } from "@/lib/utils";
 
 export default function LandlordDashboard() {
     const { user } = useAuth();
+    const stats = useMarketStats();
     const { getContractsByLandlord, reviews } = useData();
 
     if (!user) return null;
@@ -131,7 +133,7 @@ export default function LandlordDashboard() {
                     <div>
                         <h4 className="font-bold text-slate-800 text-sm mb-1">Cero Impagos</h4>
                         <p className="text-sm text-slate-600 leading-snug">
-                            Reducción del <span className="font-bold text-brand-blue">98% en incidentes</span> al usar contratos validados por RentTruth.
+                            Reducción del <span className="font-bold text-brand-blue">{stats.paymentSuccess}% en incidentes</span> al usar contratos validados por RentTruth.
                         </p>
                     </div>
                 </div>
@@ -143,7 +145,7 @@ export default function LandlordDashboard() {
                     <div>
                         <h4 className="font-bold text-slate-800 text-sm mb-1">Gestión Ágil</h4>
                         <p className="text-sm text-slate-600 leading-snug">
-                            Cierra acuerdos en <span className="font-bold text-orange-600">la mitad de tiempo</span> mostrando tu reputación verificada.
+                            Cierra acuerdos en <span className="font-bold text-orange-600">menos de {stats.avgTime}h</span> mostrando tu reputación verificada.
                         </p>
                     </div>
                 </div>
@@ -155,7 +157,7 @@ export default function LandlordDashboard() {
                     <div>
                         <h4 className="font-bold text-slate-800 text-sm mb-1">Más Valor</h4>
                         <p className="text-sm text-slate-600 leading-snug">
-                            Los inquilinos perciben un <span className="font-bold text-purple-600">mayor valor</span> en propiedades con propietarios transparentes.
+                            Los inquilinos perciben un <span className="font-bold text-purple-600">{stats.valueIncrease}% más valor</span> en propiedades con propietarios transparentes.
                         </p>
                     </div>
                 </div>
@@ -230,7 +232,7 @@ export default function LandlordDashboard() {
                             <h3 className="font-bold">Rentabilidad</h3>
                         </div>
                         <p className="text-sm text-indigo-800/80 leading-relaxed mb-4">
-                            Los propietarios con perfil verificado alquilan un <strong>30% más rápido</strong>.
+                            Los propietarios con perfil verificado alquilan un <strong>{stats.rentalSpeed}x más rápido</strong>.
                         </p>
                         <div className="h-1.5 w-full bg-indigo-100 rounded-full overflow-hidden">
                             <div className="h-full bg-indigo-500 w-[70%]"></div>
