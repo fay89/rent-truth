@@ -16,8 +16,8 @@ export function PwaReload() {
 
         // 2. Handler para cuando el SW cambia (se ha instalado uno nuevo)
         const handleControllerChange = () => {
-            console.log('[PWA] New version found. Reloading...');
-            window.location.reload();
+            console.log('[PWA] New version found. Skipping auto-reload to improved UX.');
+            // window.location.reload(); // Disabled to prevent splash loop
         };
 
         if ('serviceWorker' in navigator) {
