@@ -2,15 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { useAuth, User } from "@/contexts/auth-context";
 import { Card } from "@/components/ui/card";
+import { User } from "@/contexts/auth-context";
 import { Star, ShieldCheck, User as UserIcon, Calendar, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export default function PublicVerificationPage() {
     const params = useParams();
-    const { getPublicUser } = useAuth();
+    // const { getPublicUser } = useAuth(); // Removed dependency
     const [targetUser, setTargetUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -20,27 +20,50 @@ export default function PublicVerificationPage() {
 
     useEffect(() => {
         if (email) {
-            // Fetch User
-            getPublicUser(email).then(user => {
-                setTargetUser(user);
-                setLoading(false);
-            });
-
-            // Fetch Reviews directly (Public Access)
-            const fetchPublicReviews = async () => {
+            const fetchData = async () => {
                 const { supabase } = await import('@/lib/supabase');
-                const { data } = await supabase
+
+                // 1. Fetch User Profile
+                const { data: profile, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('email', email)
+                    .single();
+
+                if (profile) {
+                    setTargetUser({
+                        id: profile.id,
+                        name: profile.name,
+                        email: profile.email,
+                        role: profile.role,
+                        emailVerified: profile.email_verified,
+                        phoneVerified: profile.phone_verified,
+                        identityVerified: profile.identity_verified,
+                        identityStatus: profile.identity_status
+                    });
+                } else {
+                    console.error("Error fetching public profile:", profileError);
+                    setTargetUser(null);
+                }
+
+                // 2. Fetch Reviews
+                const { data: reviewsData } = await supabase
                     .from('reviews')
                     .select('*')
                     .eq('target_id', email);
 
-                if (data) {
-                    setPublicReviews(data);
+                if (reviewsData) {
+                    setPublicReviews(reviewsData);
                 }
+
+                setLoading(false);
             };
-            fetchPublicReviews();
+
+            fetchData();
+        } else {
+            setLoading(false);
         }
-    }, [email, getPublicUser]);
+    }, [email]);
 
     if (loading) {
         return <div className="min-h-screen flex items-center justify-center bg-neutral-50">Cargando perfil...</div>;
