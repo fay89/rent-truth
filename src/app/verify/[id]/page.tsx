@@ -1,75 +1,36 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
-import { User } from "@/contexts/auth-context";
 import { Star, ShieldCheck, User as UserIcon, Calendar, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Metadata } from "next";
 
-export default function PublicVerificationPage() {
-    const params = useParams();
-    // const { getPublicUser } = useAuth(); // Removed dependency
-    const [targetUser, setTargetUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
+// Force dynamic behavior because we rely on specific route params that might change content
+// although for a specific ID it is static, Next.js caches well.
+export const revalidate = 0;
 
-    const email = decodeURIComponent(params.id as string);
+// Generate Metadata for better sharing preview
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+    const { id } = await params;
+    const email = decodeURIComponent(id);
+    return {
+        title: `Perfil Verificado: ${email} - RentTruth`,
+        description: `Verifica la reputación y estado de identidad de ${email} en RentTruth.`
+    };
+}
 
-    const [publicReviews, setPublicReviews] = useState<any[]>([]);
+export default async function PublicVerificationPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
+    const email = decodeURIComponent(id);
 
-    useEffect(() => {
-        if (email) {
-            const fetchData = async () => {
-                const { supabase } = await import('@/lib/supabase');
+    // 1. Fetch User Profile
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('email', email)
+        .single();
 
-                // 1. Fetch User Profile
-                const { data: profile, error: profileError } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('email', email)
-                    .single();
-
-                if (profile) {
-                    setTargetUser({
-                        id: profile.id,
-                        name: profile.name,
-                        email: profile.email,
-                        role: profile.role,
-                        emailVerified: profile.email_verified,
-                        phoneVerified: profile.phone_verified,
-                        identityVerified: profile.identity_verified,
-                        identityStatus: profile.identity_status
-                    });
-                } else {
-                    console.error("Error fetching public profile:", profileError);
-                    setTargetUser(null);
-                }
-
-                // 2. Fetch Reviews
-                const { data: reviewsData } = await supabase
-                    .from('reviews')
-                    .select('*')
-                    .eq('target_id', email);
-
-                if (reviewsData) {
-                    setPublicReviews(reviewsData);
-                }
-
-                setLoading(false);
-            };
-
-            fetchData();
-        } else {
-            setLoading(false);
-        }
-    }, [email]);
-
-    if (loading) {
-        return <div className="min-h-screen flex items-center justify-center bg-neutral-50">Cargando perfil...</div>;
-    }
-
-    if (!targetUser) {
+    if (!profile) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-neutral-50 p-4">
                 <Card className="max-w-md w-full text-center p-8">
@@ -86,12 +47,16 @@ export default function PublicVerificationPage() {
         );
     }
 
+    // 2. Fetch Reviews
+    const { data: reviews } = await supabase
+        .from('reviews')
+        .select('*')
+        .eq('target_id', email);
+
     // Calculate Score
-    // Calculate Score
-    // We already filtered by targetId in the direct query
-    const reviewCount = publicReviews.length;
+    const reviewCount = reviews?.length || 0;
     const averageRating = reviewCount > 0
-        ? (publicReviews.reduce((acc, r) => acc + r.rating, 0) / reviewCount).toFixed(1)
+        ? (reviews!.reduce((acc, r) => acc + r.rating, 0) / reviewCount).toFixed(1)
         : "N/A";
 
     return (
@@ -113,7 +78,7 @@ export default function PublicVerificationPage() {
                             <div className="w-32 h-32 bg-white p-2 rounded-full shadow-lg">
                                 <div className="w-full h-full bg-neutral-100 rounded-full flex items-center justify-center border-4 border-white overflow-hidden">
                                     <span className="text-4xl font-bold text-neutral-300 select-none">
-                                        {targetUser.name.charAt(0).toUpperCase()}
+                                        {profile.name?.charAt(0).toUpperCase() || email.charAt(0).toUpperCase()}
                                     </span>
                                 </div>
                             </div>
@@ -122,13 +87,13 @@ export default function PublicVerificationPage() {
                         {/* User Info */}
                         <div className="text-center mb-6">
                             <h1 className="text-2xl font-bold text-neutral-800 flex items-center justify-center gap-2">
-                                {targetUser.name}
-                                <CheckCircle2 className="w-5 h-5 text-brand-green fill-green-50" />
+                                {profile.name || "Usuario"}
+                                {profile.identity_verified && <CheckCircle2 className="w-5 h-5 text-brand-green fill-green-50" />}
                             </h1>
                             <p className="text-brand-blue font-medium uppercase tracking-wide text-xs mt-1">
-                                {targetUser.role === "TENANT" ? "Inquilino Verificado" : "Propietario Verificado"}
+                                {profile.role === "TENANT" ? "Inquilino Verificado" : "Propietario Verificado"}
                             </p>
-                            <p className="text-neutral-400 text-xs mt-1">{targetUser.email}</p>
+                            <p className="text-neutral-400 text-xs mt-1">{profile.email}</p>
                         </div>
 
                         {/* Score Card */}
@@ -158,7 +123,9 @@ export default function PublicVerificationPage() {
                             <div className="bg-blue-50/50 p-3 rounded-xl border border-blue-100 text-center">
                                 <ShieldCheck className="w-5 h-5 text-brand-blue mx-auto mb-1" />
                                 <p className="text-[10px] text-neutral-400 uppercase font-semibold">Identidad</p>
-                                <p className="text-sm font-bold text-brand-blue">Verificada</p>
+                                <p className="text-sm font-bold text-brand-blue">
+                                    {profile.identity_verified ? "Verificada" : "Pendiente"}
+                                </p>
                             </div>
                             <div className="bg-green-50/50 p-3 rounded-xl border border-green-100 text-center">
                                 <Calendar className="w-5 h-5 text-brand-green mx-auto mb-1" />
