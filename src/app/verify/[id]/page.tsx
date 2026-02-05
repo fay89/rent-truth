@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useAuth, User } from "@/contexts/auth-context";
-import { useData } from "@/contexts/data-context";
 import { Card } from "@/components/ui/card";
 import { Star, ShieldCheck, User as UserIcon, Calendar, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
@@ -12,18 +11,34 @@ import { Button } from "@/components/ui/button";
 export default function PublicVerificationPage() {
     const params = useParams();
     const { getPublicUser } = useAuth();
-    const { reviews } = useData();
     const [targetUser, setTargetUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
     const email = decodeURIComponent(params.id as string);
 
+    const [publicReviews, setPublicReviews] = useState<any[]>([]);
+
     useEffect(() => {
         if (email) {
+            // Fetch User
             getPublicUser(email).then(user => {
                 setTargetUser(user);
                 setLoading(false);
             });
+
+            // Fetch Reviews directly (Public Access)
+            const fetchPublicReviews = async () => {
+                const { supabase } = await import('@/lib/supabase');
+                const { data } = await supabase
+                    .from('reviews')
+                    .select('*')
+                    .eq('target_id', email);
+
+                if (data) {
+                    setPublicReviews(data);
+                }
+            };
+            fetchPublicReviews();
         }
     }, [email, getPublicUser]);
 
@@ -49,10 +64,11 @@ export default function PublicVerificationPage() {
     }
 
     // Calculate Score
-    const userReviews = reviews.filter(r => r.targetId === targetUser.email);
-    const reviewCount = userReviews.length;
+    // Calculate Score
+    // We already filtered by targetId in the direct query
+    const reviewCount = publicReviews.length;
     const averageRating = reviewCount > 0
-        ? (userReviews.reduce((acc, r) => acc + r.rating, 0) / reviewCount).toFixed(1)
+        ? (publicReviews.reduce((acc, r) => acc + r.rating, 0) / reviewCount).toFixed(1)
         : "N/A";
 
     return (
