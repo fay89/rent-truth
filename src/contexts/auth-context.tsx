@@ -201,6 +201,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 setUser(optimisticUser);
                 setIsLoading(false); // Release UI immediately
 
+                // Give React a moment to propagate state to Context Consumers
+                await new Promise(resolve => setTimeout(resolve, 100));
+
                 // 3. Redirect IMMEDIATELY
                 if (role === "LANDLORD") {
                     router.push("/dashboard/landlord");
