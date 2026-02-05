@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { useData } from "@/contexts/data-context";
 import { Badge } from "@/components/ui/badge";
 import { ShareReputationDialog } from "@/components/share-reputation-dialog";
-import { CheckCircle2, Circle, Clock, FileText, Bell, Shield, ChevronRight, Star, ArrowUpRight, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Circle, Clock, FileText, Bell, Shield, ChevronRight, Star, ArrowUpRight, ShieldCheck, QrCode } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -59,7 +59,16 @@ export default function TenantDashboard() {
                             <p className="text-sm text-blue-200 mt-1">{myReviews.length} reseñas verificadas</p>
                         </div>
                         <div className="mt-8">
-                            <ShareReputationDialog />
+                            <ShareReputationDialog
+                                trigger={
+                                    <Button className="w-full bg-white/10 hover:bg-white/20 text-white font-medium backdrop-blur-sm border border-white/10 shadow-lg shadow-black/10 transition-all group-hover:scale-[1.02]">
+                                        <div className="flex items-center gap-2">
+                                            <QrCode className="w-4 h-4" />
+                                            <span>Compartir mi QR</span>
+                                        </div>
+                                    </Button>
+                                }
+                            />
                         </div>
                     </div>
                 </div>
