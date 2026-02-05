@@ -170,18 +170,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
             console.log("Iniciando login para:", email);
 
-            // Race condition para el Auth de Supabase (por si la red va mal)
-            const authPromise = supabase.auth.signInWithPassword({
+            // 1. Authenticate (Must wait for this)
+            const { data, error } = await supabase.auth.signInWithPassword({
                 email,
                 password
             });
-            // Extended timeout to 60s to effectively allow "infinite" wait for slow networks
-            const authTimeout = new Promise<{ data: any; error: any }>((_, reject) =>
-                setTimeout(() => reject(new Error("Timeout conectando con servidor")), 60000)
-            );
-
-            const { data, error } = await Promise.race([authPromise, authTimeout])
-                .catch(err => ({ data: { user: null, session: null }, error: { message: "Error de conexión (Timeout): " + err.message } }));
 
             if (error) {
                 console.warn("Login error:", error.message);
@@ -191,59 +184,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
 
             if (data.user) {
-                console.log("Autenticación exitosa. Obteniendo perfil...");
+                console.log("Autenticación exitosa. Redirigiendo optimísticamente...");
 
-                // Intento directo de obtener perfil con TIMEOUT DE SEGURIDAD
-                // Si fetchProfile se cuelga, cortamos a los 4 segundos para no dejar al usuario tirado
-                const profilePromise = fetchProfile(data.user.id, data.user.email!);
-                // Extended timeout to 30s for profile fetch
-                const timeoutPromise = new Promise<{ timeout: true }>((resolve) =>
-                    setTimeout(() => resolve({ timeout: true }), 30000)
-                );
+                // 2. OPTIMISTIC UPDATE: Set user state immediately with known info
+                // We assume the selected role is correct for now to speed up UX
+                const optimisticUser: User = {
+                    id: data.user.id,
+                    email: data.user.email!,
+                    name: email.split('@')[0], // Placeholder
+                    role: role,
+                    emailVerified: false,
+                    phoneVerified: false,
+                    identityVerified: false,
+                    identityStatus: 'PENDING'
+                };
+                setUser(optimisticUser);
+                setIsLoading(false); // Release UI immediately
 
-                // @ts-ignore - TS might complain about mixing types but we handle it
-                const result = await Promise.race([profilePromise, timeoutPromise]);
-                const userProfile = (result && 'timeout' in result) ? null : result as User | null;
-
-                if (!userProfile) {
-                    // Si falla el perfil O salta el timeout
-                    console.warn("[Auth] Perfil lento o no disponible. Activando protocolo de escape (Fallback).");
-
-                    setIsLoading(false); // Liberar UI Context
-
-                    // Fallback directo basado en el rol solicitado
-                    if (role === "LANDLORD") {
-                        router.push("/dashboard/landlord");
-                    } else if (role === "ADMIN") {
-                        router.push("/dashboard/admin");
-                    } else {
-                        router.push("/dashboard/tenant");
-                    }
-                    return true;
-                }
-
-                // Perfil cargado correctamente
-                setIsLoading(false); // Liberar UI
-                if (userProfile.role === 'ADMIN') {
-                    router.push("/dashboard/admin");
-                    return true;
-                }
-
-                if (userProfile.role !== role) {
-                    setIsLoading(false); // Liberar UI
-                    if (userProfile.role === "LANDLORD") {
-                        router.push("/dashboard/landlord");
-                    } else {
-                        router.push("/dashboard/tenant");
-                    }
-                    return true;
-                }
-
+                // 3. Redirect IMMEDIATELY
                 if (role === "LANDLORD") {
                     router.push("/dashboard/landlord");
+                } else if (role === "ADMIN") {
+                    router.push("/dashboard/admin");
                 } else {
                     router.push("/dashboard/tenant");
                 }
+
+                // 4. Background Fetch (Fire and forget, let AuthListener or Dashboard update data)
+                fetchProfile(data.user.id, data.user.email!).then(profile => {
+                    if (profile && profile.role !== role) {
+                        // If role mismatch found later, handle it (rare edge case)
+                        console.warn("Optimistic role mismatch. Redirecting...");
+                        if (profile.role === 'ADMIN') router.push("/dashboard/admin");
+                        else if (profile.role === 'LANDLORD') router.push("/dashboard/landlord");
+                        else router.push("/dashboard/tenant");
+                    }
+                });
+
                 return true;
             }
             return false;
