@@ -72,8 +72,17 @@ export default function LandlordDashboard() {
                     <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col justify-between group hover:border-brand-blue/20 transition-all">
                         <div>
                             <div className="flex items-center justify-between mb-4">
-                                <div className="bg-yellow-50 text-yellow-600 p-2.5 rounded-xl">
-                                    <Star className="w-6 h-6 fill-yellow-500 text-yellow-500" />
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-yellow-50 text-yellow-600 p-2.5 rounded-xl">
+                                        <Star className="w-6 h-6 fill-yellow-500 text-yellow-500" />
+                                    </div>
+                                    <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200">
+                                        {user.photoUrl ? (
+                                            <img src={user.photoUrl} alt={user.name} className="h-full w-full object-cover" />
+                                        ) : (
+                                            <span className="text-slate-600 font-bold">{user.name.charAt(0).toUpperCase()}</span>
+                                        )}
+                                    </div>
                                 </div>
                                 <div className="text-2xl font-black text-slate-800">{rating}</div>
                             </div>
