@@ -29,23 +29,18 @@ export default function LoginPage() {
         if (email && password) {
             setIsLoading(true);
 
-            // Safety timeout
-            const safetyTimeout = setTimeout(() => {
-                if (isMounted.current) {
-                    setIsLoading(false);
-                    alert("El sistema tardó demasiado en responder.");
-                }
-            }, 8000);
+            // Safety timeout removed to allow AuthContext to handle long waits
+            // const safetyTimeout = setTimeout(...)
 
             try {
                 const success = await login(email, role, password);
-                clearTimeout(safetyTimeout);
+                // clearTimeout(safetyTimeout);
                 if (!success) {
                     // Alert handled by context
                 }
             } catch (err) {
                 console.error("Login trigger error:", err);
-                clearTimeout(safetyTimeout);
+                // clearTimeout(safetyTimeout);
             } finally {
                 if (isMounted.current) setIsLoading(false);
             }
