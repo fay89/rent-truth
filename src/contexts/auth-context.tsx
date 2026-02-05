@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Fetch user profile from 'profiles' table
     const fetchProfile = async (userId: string, email: string): Promise<User | null> => {
         let attempts = 0;
-        const maxAttempts = 3;
+        const maxAttempts = 5;
 
         while (attempts < maxAttempts) {
             try {
@@ -67,7 +67,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     console.error(`Attempt ${attempts} failed fetching profile:`, error);
                     if (attempts === maxAttempts) {
                         // Only alert if it's NOT an abort error (which we filtered) and NOT a network fluctuation likely to pass
-                        alert(`Error obteniendo perfil tras ${maxAttempts} intentos: ${error.message} (${error.code})`);
+                        // alert(`Error obteniendo perfil tras ${maxAttempts} intentos: ${error.message} (${error.code})`);
+                        console.error('Max attempts reached fetching profile', error);
                         return null;
                     }
                     // Wait before retry
@@ -175,7 +176,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 password
             });
             const authTimeout = new Promise<{ data: any; error: any }>((_, reject) =>
-                setTimeout(() => reject(new Error("Timeout conectando con servidor")), 6000)
+                setTimeout(() => reject(new Error("Timeout conectando con servidor")), 15000)
             );
 
             const { data, error } = await Promise.race([authPromise, authTimeout])
@@ -195,7 +196,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 // Si fetchProfile se cuelga, cortamos a los 4 segundos para no dejar al usuario tirado
                 const profilePromise = fetchProfile(data.user.id, data.user.email!);
                 const timeoutPromise = new Promise<{ timeout: true }>((resolve) =>
-                    setTimeout(() => resolve({ timeout: true }), 4000)
+                    setTimeout(() => resolve({ timeout: true }), 10000)
                 );
 
                 // @ts-ignore - TS might complain about mixing types but we handle it
