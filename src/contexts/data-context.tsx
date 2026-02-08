@@ -113,27 +113,22 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const fetchUsers = React.useCallback(async () => {
-        console.log("[DataContext] fetchUsers initiated. User:", user?.email, "Role:", user?.role);
-
         if (user?.role?.toUpperCase() !== 'ADMIN') {
-            console.warn("[DataContext] fetchUsers skipped: Not admin or no user.");
             return;
         }
 
-        // Order by created_at descending
-        const { data, error, count } = await supabase
+        // Order by created_at descending (REMOVED: column missing in DB)
+        const { data, error } = await supabase
             .from('profiles')
-            .select('*', { count: 'exact' })
-            .order('created_at', { ascending: false });
+            .select('*');
 
         if (error) {
             console.error("Error fetching users:", error);
-            alert(`Debug Error Fetching Users: ${error.message}`);
+            // alert(`Error Fetching Users: ${error.message}`);
             return;
         }
 
         if (data) {
-            console.log(`[DataContext] fetchUsers success. Got ${data.length} records.`);
             const mappedUsers: User[] = data.map((u: any) => ({
                 id: u.id,
                 name: u.name || u.email.split('@')[0],
@@ -148,9 +143,6 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
                 createdAt: u.created_at
             }));
             setUsers(mappedUsers);
-            if (mappedUsers.length === 0) {
-                // alert("Debug: Fetched 0 users. Check console for RLS warnings.");
-            }
         }
     }, [user]);
 
