@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, User as UserIcon, CheckCircle2, XCircle, Shield, Mail, Phone, Loader2 } from "lucide-react";
 
 export default function AdminUsersPage() {
-    const { users } = useData();
+    const { users, refreshUsers } = useData();
     const { isLoading, user } = useAuth();
     const [searchTerm, setSearchTerm] = useState("");
     const [textSearch, setTextSearch] = useState("");
@@ -17,10 +17,9 @@ export default function AdminUsersPage() {
     // Auto-refresh if empty
     useEffect(() => {
         if (users.length === 0 && user?.role === 'ADMIN') {
-            const { refreshUsers } = useData();
             if (refreshUsers) refreshUsers();
         }
-    }, [users.length, user]);
+    }, [users.length, user, refreshUsers]);
 
     const filteredUsers = users.filter(u => {
         const matchesRole = (searchTerm === "" || searchTerm === "ALL") ? true : u.role === searchTerm;
@@ -42,7 +41,7 @@ export default function AdminUsersPage() {
                     </div>
                     <button
                         onClick={() => {
-                            if (useData().refreshUsers) useData().refreshUsers();
+                            if (refreshUsers) refreshUsers();
                             else window.location.reload();
                         }}
                         className="p-2 bg-white border border-neutral-200 rounded-full hover:bg-neutral-50 text-neutral-500 transition-colors"
