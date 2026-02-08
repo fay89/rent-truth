@@ -42,6 +42,7 @@ interface DataContextType {
     getContractsByLandlord: (email: string) => Contract[];
     getContractsByTenant: (email: string) => Contract[];
     refreshUsers: () => Promise<void>;
+    deleteUser: (userId: string) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -313,6 +314,26 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         return contracts.filter((c) => c.tenantEmail.toLowerCase() === email.toLowerCase());
     };
 
+    const deleteUser = async (userId: string) => {
+        if (user?.role !== 'ADMIN') {
+            alert("No tienes permisos para realizar esta acción.");
+            return;
+        }
+
+        const { error } = await supabase
+            .from('profiles')
+            .delete()
+            .eq('id', userId);
+
+        if (error) {
+            console.error("Error deleting user:", error);
+            alert("Error al eliminar usuario: " + error.message);
+        } else {
+            alert("Usuario eliminado correctamente.");
+            fetchUsers(); // Refresh list
+        }
+    };
+
     return (
         <DataContext.Provider
             value={{
@@ -326,7 +347,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
                 addReview,
                 getContractsByLandlord,
                 getContractsByTenant,
-                refreshUsers: fetchUsers
+                refreshUsers: fetchUsers,
+                deleteUser
             }}
         >
             {children}

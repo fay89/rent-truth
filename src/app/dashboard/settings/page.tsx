@@ -65,34 +65,7 @@ export default function SettingsPage() {
                     </CardContent>
                 </Card>
 
-                {/* DANGER ZONE */}
-                <Card className="border-red-100 shadow-sm bg-red-50/50">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-red-600">
-                            Zona de Peligro
-                        </CardTitle>
-                        <CardDescription>Acciones destructivas para desarrolladores.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex items-center justify-between">
-                            <div className="space-y-0.5">
-                                <Label className="text-base font-bold text-red-700">Eliminar todos los datos</Label>
-                                <p className="text-sm text-red-600/80">Borra usuarios, contratos y reseñas. ¡No se puede deshacer!</p>
-                            </div>
-                            <Button
-                                variant="destructive"
-                                onClick={() => {
-                                    if (confirm("¿Estás SEGURO? Se borrará TODO y volverás al login.")) {
-                                        localStorage.clear();
-                                        window.location.href = "/";
-                                    }
-                                }}
-                            >
-                                Resetear Todo
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
+
             </div>
         </div>
     );

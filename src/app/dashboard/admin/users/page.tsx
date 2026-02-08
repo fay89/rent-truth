@@ -6,10 +6,10 @@ import { useAuth } from "@/contexts/auth-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, User as UserIcon, CheckCircle2, XCircle, Shield, Mail, Phone, Loader2 } from "lucide-react";
+import { Search, User as UserIcon, CheckCircle2, XCircle, Shield, Mail, Phone, Loader2, Trash2 } from "lucide-react";
 
 export default function AdminUsersPage() {
-    const { users, refreshUsers } = useData();
+    const { users, refreshUsers, deleteUser } = useData();
     const { isLoading, user } = useAuth();
     const [searchTerm, setSearchTerm] = useState("");
     const [textSearch, setTextSearch] = useState("");
@@ -135,6 +135,7 @@ export default function AdminUsersPage() {
                                     <th className="px-6 py-4 font-medium">Rol</th>
                                     <th className="px-6 py-4 font-medium">Identidad</th>
                                     <th className="px-6 py-4 font-medium">Contacto</th>
+                                    <th className="px-6 py-4 font-medium text-right">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-neutral-100">
@@ -182,6 +183,19 @@ export default function AdminUsersPage() {
                                                 </div>
                                                 {/* Phone if available */}
                                             </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <button
+                                                onClick={() => {
+                                                    if (confirm(`¿Estás seguro de eliminar al usuario ${user.name || user.email}? Esta acción no se puede deshacer.`)) {
+                                                        deleteUser(user.id);
+                                                    }
+                                                }}
+                                                className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                                                title="Eliminar usuario"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}
