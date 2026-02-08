@@ -112,7 +112,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const fetchUsers = React.useCallback(async () => {
-        if (user?.role !== 'ADMIN') return;
+        if (user?.role?.toUpperCase() !== 'ADMIN') return;
 
         // Order by created_at descending
         const { data, error } = await supabase

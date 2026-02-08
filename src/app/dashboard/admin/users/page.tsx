@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useData } from "@/contexts/data-context";
 import { useAuth } from "@/contexts/auth-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,16 +10,24 @@ import { Search, User as UserIcon, CheckCircle2, XCircle, Shield, Mail, Phone, L
 
 export default function AdminUsersPage() {
     const { users } = useData();
-    const { isLoading } = useAuth();
+    const { isLoading, user } = useAuth();
     const [searchTerm, setSearchTerm] = useState("");
+    const [textSearch, setTextSearch] = useState("");
 
-    // Removed local fetching logic in favor of global context
-    // This fixes the issue where local fetch might run before auth is ready
+    // Auto-refresh if empty
+    useEffect(() => {
+        if (users.length === 0 && user?.role === 'ADMIN') {
+            const { refreshUsers } = useData();
+            if (refreshUsers) refreshUsers();
+        }
+    }, [users.length, user]);
 
-    const filteredUsers = users.filter(u =>
-        (u.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-        (u.email?.toLowerCase() || "").includes(searchTerm.toLowerCase())
-    );
+    const filteredUsers = users.filter(u => {
+        const matchesRole = (searchTerm === "" || searchTerm === "ALL") ? true : u.role === searchTerm;
+        const matchesText = (u.name?.toLowerCase() || "").includes(textSearch.toLowerCase()) ||
+            (u.email?.toLowerCase() || "").includes(textSearch.toLowerCase());
+        return matchesRole && matchesText;
+    });
 
     return (
         <div className="space-y-6">
@@ -28,18 +36,39 @@ export default function AdminUsersPage() {
                     <h1 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100">Usuarios Registrados</h1>
                     <p className="text-neutral-500 mt-2">Gestión y visualización de la base de usuarios de RentTruth.</p>
                 </div>
-                <button
-                    onClick={() => {
-                        // Manual refresh
-                        // @ts-ignore
-                        if (useData().refreshUsers) useData().refreshUsers();
-                        else window.location.reload();
-                    }}
-                    className="p-2 bg-white border border-neutral-200 rounded-full hover:bg-neutral-50 text-neutral-500 transition-colors"
-                    title="Recargar lista"
-                >
-                    <Loader2 className="h-4 w-4" />
-                </button>
+                <div className="flex items-center gap-2">
+                    <div className="text-xs text-neutral-400 font-mono hidden md:block">
+                        Total: {users.length} | Rol: {useAuth().user?.role}
+                    </div>
+                    <button
+                        onClick={() => {
+                            if (useData().refreshUsers) useData().refreshUsers();
+                            else window.location.reload();
+                        }}
+                        className="p-2 bg-white border border-neutral-200 rounded-full hover:bg-neutral-50 text-neutral-500 transition-colors"
+                        title="Recargar lista"
+                    >
+                        <Loader2 className="h-4 w-4" />
+                    </button>
+                </div>
+            </div>
+
+            {/* Quick Filters / Tabs */}
+            <div className="flex items-center gap-2 p-1 bg-neutral-100 rounded-lg w-fit">
+                {['ALL', 'TENANT', 'LANDLORD', 'ADMIN'].map((role) => (
+                    <button
+                        key={role}
+                        onClick={() => setSearchTerm(role === 'ALL' ? "" : role)}
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${(searchTerm === role || (searchTerm === "" && role === 'ALL'))
+                            ? "bg-white text-brand-blue shadow-sm"
+                            : "text-neutral-500 hover:text-neutral-700"
+                            }`}
+                    >
+                        {role === 'ALL' ? 'Todos' :
+                            role === 'TENANT' ? 'Inquilinos' :
+                                role === 'LANDLORD' ? 'Propietarios' : 'Admin'}
+                    </button>
+                ))}
             </div>
 
             {/* Stats Snippet */}
@@ -82,8 +111,8 @@ export default function AdminUsersPage() {
                 <Input
                     placeholder="Buscar por nombre o email..."
                     className="pl-10 bg-white"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    value={textSearch}
+                    onChange={(e) => setTextSearch(e.target.value)}
                 />
             </div>
 
@@ -162,6 +191,13 @@ export default function AdminUsersPage() {
                     </div>
                 </div>
             )}
+
+            <div className="mt-8 p-4 bg-neutral-100 rounded text-xs font-mono text-neutral-500 overflow-auto">
+                <p><strong>Debug Info:</strong></p>
+                <p>User Role (AuthContext): {useAuth().user?.role || 'undefined'}</p>
+                <p>Users Count (DataContext): {users.length}</p>
+                <p>Is Loading (AuthContext): {isLoading ? 'true' : 'false'}</p>
+            </div>
         </div>
     );
 }

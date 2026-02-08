@@ -83,7 +83,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                         id: data.id,
                         name: data.name || email.split('@')[0],
                         email: data.email || email,
-                        role: data.role as UserRole,
+                        role: (data.role?.toUpperCase() as UserRole) || 'TENANT',
                         emailVerified: data.email_verified || false,
                         photoUrl: data.photo_url,
                         phone: data.phone,
