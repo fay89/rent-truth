@@ -322,17 +322,35 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
             return;
         }
 
-        const { error } = await supabase
-            .from('profiles')
-            .delete()
-            .eq('id', userId);
+        try {
+            // Get current session token for authorization
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                alert("No hay sesión activa.");
+                return;
+            }
 
-        if (error) {
-            console.error("Error deleting user:", error);
-            alert("Error al eliminar usuario: " + error.message);
-        } else {
-            alert("Usuario eliminado correctamente.");
+            const response = await fetch('/api/admin/users/delete', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify({ userId })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || "Error desconocido al eliminar usuario.");
+            }
+
+            alert("Usuario eliminado permanentemente.");
             fetchUsers(); // Refresh list
+
+        } catch (error: any) {
+            console.error("Error deleting user:", error);
+            alert("Error: " + error.message);
         }
     };
 
