@@ -1,17 +1,26 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
-// Initialize Admin Client (Service Role)
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-        auth: {
-            autoRefreshToken: false,
-            persistSession: false
-        }
+// Initialize Admin Client (Service Role) Lazy
+const getSupabaseAdmin = () => {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!supabaseUrl || !serviceRoleKey) {
+        throw new Error("Missing Supabase URL or Service Role Key");
     }
-);
+
+    return createClient(
+        supabaseUrl,
+        serviceRoleKey,
+        {
+            auth: {
+                autoRefreshToken: false,
+                persistSession: false
+            }
+        }
+    );
+};
 
 export async function DELETE(request: Request) {
     try {
@@ -24,6 +33,7 @@ export async function DELETE(request: Request) {
         const token = authHeader.replace('Bearer ', '');
 
         // Verify validity of the token using Admin client (verifies signature and expiration)
+        const supabaseAdmin = getSupabaseAdmin();
         const { data: { user }, error: userError } = await supabaseAdmin.auth.getUser(token);
 
         if (userError || !user) {
