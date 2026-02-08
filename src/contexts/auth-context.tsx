@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 export type UserRole = "TENANT" | "LANDLORD" | "ADMIN";
@@ -114,16 +114,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 }
 
                 console.error(`Attempt ${attempts} unexpected error:`, err);
-                // Removed intrusive alert to prevent bad UX on fleeting network errors or race conditions
-                // if (attempts === maxAttempts) {
-                //    alert(...) 
-                // }
-
                 await new Promise(r => setTimeout(r, 1000 * attempts));
             }
         }
         return null;
     };
+
+    // --- ADMIN REDIRECT FIX ---
+    // Force redirect if Admin lands on Tenant/Landlord dashboard
+    const pathname = usePathname();
+
+    useEffect(() => {
+        if (!user || user.role !== 'ADMIN') return;
+
+        // If user is ADMIN but text is /dashboard/tenant or /dashboard/landlord
+        if (pathname?.startsWith('/dashboard/tenant') || pathname?.startsWith('/dashboard/landlord')) {
+            console.log("🚨 Admin detected on wrong dashboard. Redirecting to /dashboard/admin...");
+            router.replace('/dashboard/admin');
+        }
+    }, [user, pathname, router]);
+
 
     // Initialize Auth Listener
     useEffect(() => {
