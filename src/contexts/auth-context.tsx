@@ -17,6 +17,7 @@ export interface User {
     phoneVerified: boolean;
     identityVerified: boolean;
     identityStatus: 'PENDING' | 'VERIFIED' | 'REJECTED' | 'MANUAL_REVIEW';
+    createdAt?: string;
 }
 
 interface AuthContextType {
@@ -88,7 +89,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                         phone: data.phone,
                         phoneVerified: data.phone_verified || false,
                         identityVerified: data.identity_verified || false,
-                        identityStatus: data.identity_status || 'PENDING'
+                        identityStatus: data.identity_status || 'PENDING',
+                        createdAt: data.created_at
                     };
                     setUser(mappedUser);
                     return mappedUser;

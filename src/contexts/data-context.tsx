@@ -113,9 +113,11 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     const fetchUsers = React.useCallback(async () => {
         if (user?.role !== 'ADMIN') return;
 
+        // Order by created_at descending
         const { data, error } = await supabase
             .from('profiles')
-            .select('*');
+            .select('*')
+            .order('created_at', { ascending: false });
 
         if (error) {
             console.error("Error fetching users:", error);
@@ -130,9 +132,11 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
                 role: u.role,
                 emailVerified: u.email_verified || false,
                 photoUrl: u.photo_url,
+                phone: u.phone,
                 phoneVerified: u.phone_verified || false,
                 identityVerified: u.identity_verified || false,
-                identityStatus: u.identity_status || 'PENDING'
+                identityStatus: u.identity_status || 'PENDING',
+                createdAt: u.created_at
             }));
             setUsers(mappedUsers);
         }

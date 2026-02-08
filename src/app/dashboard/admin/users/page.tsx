@@ -1,55 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { useState } from "react";
+import { useData } from "@/contexts/data-context";
+import { useAuth } from "@/contexts/auth-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search, User as UserIcon, CheckCircle2, XCircle, Shield, Mail, Phone, Loader2 } from "lucide-react";
-import { UserRole } from "@/contexts/auth-context";
-
-interface Profile {
-    id: string;
-    email: string;
-    name: string;
-    role: UserRole;
-    identity_verified: boolean;
-    phone_verified: boolean;
-    email_verified: boolean;
-    created_at?: string;
-}
 
 export default function AdminUsersPage() {
-    const [users, setUsers] = useState<Profile[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const { users } = useData();
+    const { isLoading } = useAuth();
     const [searchTerm, setSearchTerm] = useState("");
 
-    useEffect(() => {
-        const fetchUsers = async () => {
-            setIsLoading(true);
-            try {
-                // Fetch all profiles
-                // Needs RLS policy allowing Admin to read all profiles
-                const { data, error } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (error) {
-                    console.error("Error fetching users:", error);
-                    // alert("Error cargando usuarios: " + error.message);
-                } else {
-                    setUsers(data as any[] || []);
-                }
-            } catch (err) {
-                console.error("Unexpected error:", err);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchUsers();
-    }, []);
+    // Removed local fetching logic in favor of global context
+    // This fixes the issue where local fetch might run before auth is ready
 
     const filteredUsers = users.filter(u =>
         (u.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
@@ -90,7 +55,7 @@ export default function AdminUsersPage() {
                 <Card>
                     <CardContent className="p-4 flex flex-col items-center justify-center text-center">
                         <span className="text-2xl font-bold text-orange-500">
-                            {users.filter(u => u.identity_verified).length}
+                            {users.filter(u => u.identityVerified).length}
                         </span>
                         <span className="text-xs text-neutral-500 uppercase tracking-wider">Verificados</span>
                     </CardContent>
@@ -155,7 +120,7 @@ export default function AdminUsersPage() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-2">
-                                                {user.identity_verified ? (
+                                                {user.identityVerified ? (
                                                     <span className="flex items-center gap-1.5 text-green-600 text-xs font-medium px-2 py-1 bg-green-50 rounded-full">
                                                         <Shield className="h-3 w-3" /> Verificado
                                                     </span>
@@ -171,7 +136,7 @@ export default function AdminUsersPage() {
                                                 <div className="flex items-center gap-2 text-neutral-600">
                                                     <Mail className="h-3 w-3" />
                                                     <span className="truncate max-w-[200px]">{user.email}</span>
-                                                    {user.email_verified && <CheckCircle2 className="h-3 w-3 text-green-500" />}
+                                                    {user.emailVerified && <CheckCircle2 className="h-3 w-3 text-green-500" />}
                                                 </div>
                                                 {/* Phone if available */}
                                             </div>
