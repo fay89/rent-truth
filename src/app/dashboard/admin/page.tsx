@@ -24,43 +24,51 @@ export default function AdminDashboardPage() {
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Header / Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="md:col-span-1 bg-red-600 rounded-2xl p-6 text-white shadow-lg shadow-red-900/20 relative overflow-hidden group">
-                    <div className="absolute -right-6 -top-6 bg-white/10 w-24 h-24 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
-                    <div className="relative z-10">
-                        <p className="text-red-100 text-sm font-medium mb-1 flex items-center gap-2">
-                            <ShieldAlert className="w-4 h-4" /> Pendientes
-                        </p>
-                        <p className="text-4xl font-bold tracking-tight">{pendingVerifications}</p>
-                        <p className="text-xs text-red-200 mt-2">Requieren tu atención inmediata</p>
+                <Link href="#pending-verification" className="block h-full">
+                    <div className="h-full md:col-span-1 bg-red-600 rounded-2xl p-6 text-white shadow-lg shadow-red-900/20 relative overflow-hidden group cursor-pointer hover:shadow-xl transition-all hover:scale-[1.02]">
+                        <div className="absolute -right-6 -top-6 bg-white/10 w-24 h-24 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+                        <div className="relative z-10">
+                            <p className="text-red-100 text-sm font-medium mb-1 flex items-center gap-2">
+                                <ShieldAlert className="w-4 h-4" /> Pendientes
+                            </p>
+                            <p className="text-4xl font-bold tracking-tight">{pendingVerifications}</p>
+                            <p className="text-xs text-red-200 mt-2">Requieren tu atención inmediata</p>
+                        </div>
                     </div>
-                </div>
+                </Link>
 
-                <div className="md:col-span-1 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                    <p className="text-slate-500 text-sm font-medium mb-1 flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-green-500" /> Verificados
-                    </p>
-                    <p className="text-3xl font-bold text-slate-800">{verifiedContracts.length}</p>
-                    <p className="text-xs text-slate-400 mt-2">Contratos activos y seguros</p>
-                </div>
+                <Link href="/dashboard/admin/history" className="block h-full">
+                    <div className="h-full md:col-span-1 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm cursor-pointer hover:border-slate-300 hover:shadow-md transition-all hover:scale-[1.02]">
+                        <p className="text-slate-500 text-sm font-medium mb-1 flex items-center gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-green-500" /> Verificados
+                        </p>
+                        <p className="text-3xl font-bold text-slate-800">{verifiedContracts.length}</p>
+                        <p className="text-xs text-slate-400 mt-2">Contratos activos y seguros</p>
+                    </div>
+                </Link>
 
-                <div className="md:col-span-1 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                    <p className="text-slate-500 text-sm font-medium mb-1 flex items-center gap-2">
-                        <Activity className="w-4 h-4 text-blue-500" /> Total Contratos
-                    </p>
-                    <p className="text-3xl font-bold text-slate-800">{contracts.length}</p>
-                    <p className="text-xs text-slate-400 mt-2">Histórico de la plataforma</p>
-                </div>
+                <Link href="/dashboard/admin/history" className="block h-full">
+                    <div className="h-full md:col-span-1 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm cursor-pointer hover:border-slate-300 hover:shadow-md transition-all hover:scale-[1.02]">
+                        <p className="text-slate-500 text-sm font-medium mb-1 flex items-center gap-2">
+                            <Activity className="w-4 h-4 text-blue-500" /> Total Contratos
+                        </p>
+                        <p className="text-3xl font-bold text-slate-800">{contracts.length}</p>
+                        <p className="text-xs text-slate-400 mt-2">Histórico de la plataforma</p>
+                    </div>
+                </Link>
 
-                <div className="md:col-span-1 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                    <p className="text-slate-500 text-sm font-medium mb-1 flex items-center gap-2">
-                        <User className="w-4 h-4 text-purple-500" /> Usuarios
-                    </p>
-                    <p className="text-3xl font-bold text-slate-800">{totalUsers}</p>
-                    <p className="text-xs text-slate-400 mt-2">Registrados en total</p>
-                </div>
+                <Link href="/dashboard/admin/users" className="block h-full">
+                    <div className="h-full md:col-span-1 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm cursor-pointer hover:border-slate-300 hover:shadow-md transition-all hover:scale-[1.02]">
+                        <p className="text-slate-500 text-sm font-medium mb-1 flex items-center gap-2">
+                            <User className="w-4 h-4 text-purple-500" /> Usuarios
+                        </p>
+                        <p className="text-3xl font-bold text-slate-800">{totalUsers}</p>
+                        <p className="text-xs text-slate-400 mt-2">Registrados en total</p>
+                    </div>
+                </Link>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-6" id="pending-verification">
                 <div className="flex items-center justify-between">
                     <div>
                         <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Cola de Verificación</h2>
