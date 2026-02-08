@@ -41,6 +41,7 @@ interface DataContextType {
     addReview: (review: Omit<Review, "id" | "createdAt" | "rating"> & { categories: Record<string, number> }) => Promise<void>;
     getContractsByLandlord: (email: string) => Contract[];
     getContractsByTenant: (email: string) => Contract[];
+    refreshUsers: () => Promise<void>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -325,6 +326,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
                 addReview,
                 getContractsByLandlord,
                 getContractsByTenant,
+                refreshUsers: fetchUsers
             }}
         >
             {children}

@@ -23,9 +23,23 @@ export default function AdminUsersPage() {
 
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100">Usuarios Registrados</h1>
-                <p className="text-neutral-500 mt-2">Gestión y visualización de la base de usuarios de RentTruth.</p>
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold text-neutral-800 dark:text-neutral-100">Usuarios Registrados</h1>
+                    <p className="text-neutral-500 mt-2">Gestión y visualización de la base de usuarios de RentTruth.</p>
+                </div>
+                <button
+                    onClick={() => {
+                        // Manual refresh
+                        // @ts-ignore
+                        if (useData().refreshUsers) useData().refreshUsers();
+                        else window.location.reload();
+                    }}
+                    className="p-2 bg-white border border-neutral-200 rounded-full hover:bg-neutral-50 text-neutral-500 transition-colors"
+                    title="Recargar lista"
+                >
+                    <Loader2 className="h-4 w-4" />
+                </button>
             </div>
 
             {/* Stats Snippet */}
