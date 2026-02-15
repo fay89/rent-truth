@@ -21,22 +21,22 @@ export function VerificationCard({ hasProfile, userRole }: VerificationCardProps
         : "Verifica tu identidad para dar seguridad a tus inquilinos y evitar problemas.";
 
     return (
-        <div className={cn("p-6 rounded-3xl border transition-all h-full flex flex-col justify-between", hasProfile ? "bg-white border-slate-100 shadow-sm" : "bg-red-50 border-red-100")}>
+        <div className={cn("p-8 rounded-[2rem] transition-all h-full flex flex-col justify-between group", hasProfile ? "glass-card hover:shadow-xl hover:shadow-brand-blue/5 border-white/60" : "bg-red-50/50 border border-red-100 backdrop-blur-sm")}>
             <div>
-                <div className="flex items-center justify-between mb-4">
-                    <div className={cn("p-2.5 rounded-xl", hasProfile ? (isTenant ? "bg-brand-green/10 text-brand-green" : "bg-brand-blue/5 text-brand-blue") : "bg-red-100 text-red-500")}>
-                        {hasProfile ? <ShieldCheck className="w-6 h-6" /> : <Shield className="w-6 h-6" />}
+                <div className="flex items-center justify-between mb-6">
+                    <div className={cn("p-3 rounded-2xl transition-transform group-hover:scale-110 shadow-sm", hasProfile ? (isTenant ? "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100" : "bg-blue-50 text-blue-600 ring-1 ring-blue-100") : "bg-red-100/80 text-red-500 ring-1 ring-red-200")}>
+                        {hasProfile ? <ShieldCheck className="w-8 h-8" /> : <Shield className="w-8 h-8" />}
                     </div>
-                    {!hasProfile && <Badge variant="destructive" className="rounded-full">Acción requerida</Badge>}
+                    {!hasProfile && <Badge variant="destructive" className="rounded-full px-3 py-1 shadow-md shadow-red-200">Acción requerida</Badge>}
                 </div>
-                <h3 className="font-bold text-lg text-slate-800">Identidad {hasProfile ? "Verificada" : "Pendiente"}</h3>
-                <p className="text-sm text-slate-500 mt-1 leading-relaxed">
+                <h3 className="font-heading font-bold text-xl text-slate-900 mb-2">Identidad {hasProfile ? "Verificada" : "Pendiente"}</h3>
+                <p className="text-sm text-slate-500 leading-relaxed font-medium">
                     {hasProfile ? verifiedText : unverifiedText}
                 </p>
             </div>
             {!hasProfile && (
-                <Link href="/dashboard/verification" className="mt-4 inline-block">
-                    <Button size="sm" variant="destructive" className="w-full rounded-xl">Verificar Ahora</Button>
+                <Link href="/dashboard/verification" className="mt-6 inline-block w-full">
+                    <Button size="lg" className="w-full rounded-xl bg-red-500 hover:bg-red-600 shadow-lg shadow-red-200 text-white font-bold transition-all hover:-translate-y-1">Verificar Ahora</Button>
                 </Link>
             )}
         </div>

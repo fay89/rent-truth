@@ -80,7 +80,7 @@ export default function LandlordDashboard() {
                     </div>
 
                     {/* Contract List */}
-                    <div className="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
+                    <div className="glass-card rounded-[2rem] overflow-hidden">
                         {contracts.length === 0 ? (
                             <div className="text-center py-20 px-6">
                                 <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">

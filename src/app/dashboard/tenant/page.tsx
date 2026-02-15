@@ -83,19 +83,24 @@ export default function TenantDashboard() {
 
                     {/* Pending Contracts Detailed List */}
                     {pendingContracts.length > 0 && (
-                        <div className="bg-orange-50 border border-orange-100 rounded-2xl p-6 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-100 rounded-full blur-3xl -z-10"></div>
-                            <h3 className="font-bold text-orange-800 flex items-center gap-2 mb-4">
-                                <Clock className="w-5 h-5" /> Requiere tu firma
+                        <div className="glass-card bg-orange-50/30 p-8 rounded-[2rem] relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-40 h-40 bg-orange-500/10 rounded-full blur-[80px] -z-10"></div>
+
+                            <h3 className="font-heading font-bold text-orange-900 text-lg flex items-center gap-2 mb-6">
+                                <div className="p-2 bg-orange-100 rounded-lg text-orange-600">
+                                    <Clock className="w-5 h-5" />
+                                </div>
+                                Requiere tu firma
                             </h3>
-                            <div className="space-y-3">
+
+                            <div className="space-y-4">
                                 {pendingContracts.map(contract => (
-                                    <div key={contract.id} className="bg-white/80 backdrop-blur-sm p-4 rounded-xl border border-orange-200/50 flex flex-col sm:flex-row justify-between items-center gap-4 transition-transform hover:scale-[1.01]">
+                                    <div key={contract.id} className="bg-white/60 backdrop-blur-md p-5 rounded-2xl border border-orange-200/50 flex flex-col sm:flex-row justify-between items-center gap-4 transition-all hover:scale-[1.01] hover:shadow-lg hover:shadow-orange-500/5 group">
                                         <div>
-                                            <p className="font-bold text-slate-800">{contract.propertyAddress}</p>
-                                            <p className="text-xs text-slate-500">Propietario: {contract.landlordId}</p>
+                                            <p className="font-bold text-slate-800 text-lg">{contract.propertyAddress}</p>
+                                            <p className="text-sm text-slate-500 font-medium mt-1">Propietario: {contract.landlordId}</p>
                                         </div>
-                                        <Button onClick={(e) => handleVerify(contract.id, e)} className="bg-orange-500 hover:bg-orange-600 text-white rounded-lg shadow-lg shadow-orange-500/20">
+                                        <Button onClick={(e) => handleVerify(contract.id, e)} className="bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl shadow-lg shadow-orange-500/20 px-6 h-12 transition-all hover:-translate-y-1">
                                             Revisar y Firmar
                                         </Button>
                                     </div>

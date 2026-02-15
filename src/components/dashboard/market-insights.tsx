@@ -10,15 +10,16 @@ interface InsightCardProps {
 
 function InsightCard({ icon, title, description, color }: InsightCardProps) {
     const colorStyles = {
-        blue: "bg-brand-blue/5 border-brand-blue/10 text-brand-blue",
-        emerald: "bg-emerald-50 border-emerald-100 text-emerald-600",
-        indigo: "bg-indigo-50 border-indigo-100 text-indigo-600",
-        orange: "bg-orange-50 border-orange-100 text-orange-600",
-        purple: "bg-purple-50 border-purple-100 text-purple-600",
+        blue: "bg-blue-50/50 border-blue-100 text-blue-600 ring-blue-500/20",
+        emerald: "bg-emerald-50/50 border-emerald-100 text-emerald-600 ring-emerald-500/20",
+        indigo: "bg-indigo-50/50 border-indigo-100 text-indigo-600 ring-indigo-500/20",
+        orange: "bg-orange-50/50 border-orange-100 text-orange-600 ring-orange-500/20",
+        purple: "bg-purple-50/50 border-purple-100 text-purple-600 ring-purple-500/20",
     };
 
-    const wrapperClass = `${colorStyles[color].split(" ")[0]} border ${colorStyles[color].split(" ")[1]} p-5 rounded-2xl flex items-start gap-4 hover:bg-opacity-75 transition-colors`;
-    const iconClass = `bg-white p-2.5 rounded-xl shadow-sm ${colorStyles[color].split(" ")[2]} shrink-0`;
+    const wrapperClass = `glass-card p-5 rounded-2xl flex items-start gap-4 hover:bg-white/90 group transition-all duration-300`;
+    // const iconClass = `bg-white p-2.5 rounded-xl shadow-sm ${colorStyles[color].split(" ")[3]} shrink-0 group-hover:scale-110 transition-transform duration-300 ring-1`;
+    const iconClass = `p-3 rounded-2xl shadow-sm shrink-0 group-hover:scale-110 transition-transform duration-300 ring-1 ${colorStyles[color]}`;
 
     return (
         <div className={wrapperClass}>
@@ -26,8 +27,8 @@ function InsightCard({ icon, title, description, color }: InsightCardProps) {
                 {icon}
             </div>
             <div>
-                <h4 className="font-bold text-slate-800 text-sm mb-1">{title}</h4>
-                <p className="text-sm text-slate-600 leading-snug">
+                <h4 className="font-heading font-bold text-slate-900 text-sm mb-1">{title}</h4>
+                <p className="text-sm text-slate-600 leading-snug font-medium">
                     {description}
                 </p>
             </div>

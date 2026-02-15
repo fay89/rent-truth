@@ -15,20 +15,20 @@ export function ContractsStatCard({ userRole, totalCount, pendingCount, activeCo
 
     if (isTenant) {
         return (
-            <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col justify-between">
+            <div className="glass-card p-6 rounded-[2rem] flex flex-col justify-between group">
                 <div>
                     <div className="flex items-center justify-between mb-4">
-                        <div className="bg-blue-50 text-brand-blue p-2.5 rounded-xl">
+                        <div className="bg-blue-50 text-brand-blue p-3 rounded-2xl shadow-sm ring-1 ring-blue-100 group-hover:scale-110 transition-transform duration-300">
                             <FileText className="w-6 h-6" />
                         </div>
-                        {pendingCount > 0 && <Badge className="bg-orange-500 hover:bg-orange-600 rounded-full">{pendingCount} Pendientes</Badge>}
+                        {pendingCount > 0 && <Badge className="bg-orange-500 hover:bg-orange-600 rounded-full shadow-lg shadow-orange-200 animate-pulse">{pendingCount} Pendientes</Badge>}
                     </div>
-                    <h3 className="font-bold text-lg text-slate-800">Contratos</h3>
-                    <p className="text-sm text-slate-500 mt-1 leading-relaxed">
-                        Tienes {totalCount} contratos en total. {pendingCount > 0 ? "Revisa los pendientes para evitar retrasos." : "Todo está al día."}
+                    <h3 className="font-heading font-bold text-lg text-slate-800">Contratos</h3>
+                    <p className="text-sm text-slate-500 mt-1 leading-relaxed font-medium">
+                        Tienes <span className="text-slate-900 font-bold">{totalCount}</span> contratos en total. {pendingCount > 0 ? "Revisa los pendientes para evitar retrasos." : "Todo está al día."}
                     </p>
                 </div>
-                <Button variant="outline" className="mt-4 w-full rounded-xl border-slate-200 text-slate-600 hover:text-brand-blue hover:bg-slate-50" asChild>
+                <Button variant="outline" className="mt-6 w-full rounded-xl border-slate-200 text-slate-600 hover:text-brand-blue hover:bg-slate-50 font-semibold" asChild>
                     <Link href="/dashboard/contracts">Gestión de Contratos</Link>
                 </Button>
             </div>
@@ -37,24 +37,24 @@ export function ContractsStatCard({ userRole, totalCount, pendingCount, activeCo
 
     // Landlord View - formerly the Hero content, now adapted to card
     return (
-        <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col justify-between">
+        <div className="glass-card p-6 rounded-[2rem] flex flex-col justify-between group">
             <div>
                 <div className="flex items-center justify-between mb-4">
-                    <div className="bg-blue-50 text-brand-blue p-2.5 rounded-xl">
+                    <div className="bg-brand-blue text-white p-3 rounded-2xl shadow-lg shadow-brand-blue/20 group-hover:scale-110 transition-transform duration-300">
                         <Building2 className="w-6 h-6" />
                     </div>
                     <div className="flex gap-2">
-                        {pendingCount > 0 && <Badge className="bg-orange-500 hover:bg-orange-600 rounded-full">{pendingCount} Pendientes</Badge>}
-                        {activeCount > 0 && <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 rounded-full">{activeCount} Activos</Badge>}
+                        {pendingCount > 0 && <Badge className="bg-orange-500 hover:bg-orange-600 rounded-full shadow-md">{pendingCount} Pendientes</Badge>}
+                        {activeCount > 0 && <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 rounded-full font-bold">{activeCount} Activos</Badge>}
                     </div>
                 </div>
-                <h3 className="font-bold text-lg text-slate-800">Mis Propiedades</h3>
-                <div className="flex items-baseline gap-2 mt-1">
-                    <span className="text-3xl font-bold tracking-tighter">{totalCount}</span>
-                    <span className="text-sm text-slate-500">Total</span>
+                <h3 className="font-heading font-bold text-lg text-slate-800">Mis Propiedades</h3>
+                <div className="flex items-baseline gap-2 mt-2">
+                    <span className="text-4xl font-heading font-extrabold tracking-inute text-slate-900">{totalCount}</span>
+                    <span className="text-sm text-slate-500 font-medium">Total</span>
                 </div>
             </div>
-            <Button variant="outline" className="mt-4 w-full rounded-xl border-slate-200 text-slate-600 hover:text-brand-blue hover:bg-slate-50" asChild>
+            <Button className="mt-6 w-full rounded-xl bg-slate-900 text-white hover:bg-slate-800 shadow-lg shadow-slate-200 transition-all hover:translate-y-[-2px]" asChild>
                 <Link href="/dashboard/contracts">Gestión de Propiedades</Link>
             </Button>
         </div>
